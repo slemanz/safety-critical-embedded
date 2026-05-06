@@ -1,18 +1,16 @@
 # Safety-Critical Embedded Systems
 
-In simple terms, a safety critical embedded system is a specialized embedded
-computing system where failure or malfunction can directly lead to severe
-consequences.
+A safety-critical embedded system is a specialized computing system in which
+failure or malfunction can directly lead to severe consequences, such as:
 
-Including:
-
-- Loss of life or severe injury
+- Loss of life or serious injury
 - Significant environmental harm
-- Major financial loss or damage
-- Substantial damage to critical infrastructure
+- Major financial loss or property damage
+- Disruption to critical infrastructure
 
-These systems don't merely enhance convenience, they are designed to preserve
-safety and reliability under all conceivable conditions.
+Unlike general-purpose systems, safety-critical systems are not designed for
+convenience — they exist to preserve human life and operational integrity under
+all foreseeable conditions.
 
-The emphasis is therefore on deterministic behavior, fault tolerance, rigorous
-verification, and strict adherence to industry specific guidelines and standards.
+The focus is therefore on deterministic behavior, fault tolerance, rigorous
+verification, and strict adherence to industry-specific standards and guidelines.
