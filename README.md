@@ -9,46 +9,54 @@ failure or malfunction can directly lead to severe consequences, such as:
 - Disruption to critical infrastructure
 
 Unlike general-purpose systems, safety-critical systems are not designed for
-convenience — they exist to preserve human life and operational integrity under
+convenience. They exist to preserve human life and operational integrity under
 all foreseeable conditions.
 
 The focus is therefore on deterministic behavior, fault tolerance, rigorous
 verification, and strict adherence to industry-specific standards and guidelines.
 
-## Real-World Domains of safety-critical systems
+## Real-World Domains of Safety-Critical Systems
 
-1. Aerospace and Defense:
-    - Aerospace systems are perhaps the most stringent examples of safety
-    critical embedded applications.
-    - Systems such as avionics, flight controllers, navigation, engine
-    management, and communication must function flawlessly.
-    - Boeing's flight systems employ deeply embedded, safety critical firmware,
-    adhering strictly to the DO-178 standards to ensure consistent reliability
-    under extreme conditions.
+1. **Aerospace and Defense**
+   - Aerospace is arguably the most demanding domain for safety-critical embedded
+     systems, where failures at altitude are often catastrophic and irreversible.
+   - Core systems such as avionics, flight control computers, navigation, engine
+     management, and communication links must operate flawlessly under extreme
+     temperature, vibration, and electromagnetic interference.
+   - Development is governed by **DO-178C** (*Software Considerations in Airborne
+     Systems and Equipment Certification*), which defines software levels (DAL A–E)
+     based on the severity of a potential failure's effect on the aircraft and its
+     occupants.
 
-2. Automotive Systems
-    - Modern cars heavily depend on embedded software to control crucial
-    subsystems, including the anti-lock braking systems (ABS), the airbag
-    control unit, the engine control unit, and the advanced Driver Assistance
-    Systems (ADAS).
-    - The automotive industry follows rigorous standards such as the ISO 26262,
-    the Misra C and C plus, plus, and other standards including Autosar Autosar
-    standard for the Automotive Open System architecture.
-    - These guidelines are used to ensure functional safety in every line of
-    embedded code they produce.
+2. **Automotive Systems**
+   - Modern vehicles depend on embedded software to control safety-critical
+     subsystems, including Anti-lock Braking Systems (ABS), airbag control units,
+     Engine Control Units (ECUs), and Advanced Driver Assistance Systems (ADAS).
+   - The primary governing standard is **ISO 26262** (*Road Vehicles: Functional
+     Safety*), which introduces Automotive Safety Integrity Levels (ASIL A–D) to
+     classify and manage risk throughout the development lifecycle. Coding practices
+     follow **MISRA C** and **MISRA C++** guidelines to prevent undefined behavior,
+     while **AUTOSAR** (*AUTomotive Open System ARchitecture*) provides a
+     standardized software architecture for ECU development across vendors.
 
-3. Medical Devices
-    - Embedded software in medical devices such as pacemakers, insulin pumps and
-    MRI machines must operate without fail. Lives depend on it.
-    - Such systems must adhere strictly to medical standards like the IEC 62,304
-    and the FDA regulatory compliance, to minimize risks associated with
-    embedded software malfunction
+3. **Medical Devices**
+   - Embedded software in devices such as pacemakers, insulin pumps, and MRI
+     machines must operate without fail, as patient lives depend directly on their
+     correctness.
+   - **IEC 62304** (*Medical Device Software: Software Life Cycle Processes*)
+     classifies software by safety class (A, B, or C) and mandates corresponding
+     lifecycle requirements for design, testing, and maintenance. Devices marketed
+     in the United States must also comply with **FDA 21 CFR Part 820**, the Quality
+     System Regulation covering design controls and risk management.
 
-4. Industrial Automation
-    - Industrial automation controllers, including PL robotic arms and high
-    speed machining centers, manage heavy equipment and hazardous materials.
-    - A minor error could result in significant human injury or costly downtime.
-    Over here, standards such as the IEC 61 508 is relevant for developing and
-    certifying such critical industrial automation systems.
+4. **Industrial Automation**
+   - Industrial controllers, including PLCs (Programmable Logic Controllers),
+     robotic arms, and high-speed machining centers, manage heavy equipment and
+     hazardous materials in environments where a minor software fault can cause
+     serious injury or costly unplanned downtime.
+   - **IEC 61508** (*Functional Safety of Electrical/Electronic/Programmable
+     Electronic Safety-Related Systems*) is the foundational standard for this
+     domain. It defines Safety Integrity Levels (SIL 1–4) as the basis for
+     developing and certifying safety-related industrial systems across all sectors.
 
 ## Contents
