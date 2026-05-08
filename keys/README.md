@@ -1,56 +1,56 @@
-# key safety critical standards and guidelines
+# Key Safety-Critical Standards and Guidelines
 
-Professionally developed embedded firmware in safety critical context must
-comply with clearly established international standards ensuring deterministic
-behavior.
+Professionally developed embedded firmware for safety-critical applications must
+comply with established international standards that enforce deterministic behavior,
+traceability, and documented processes throughout the entire development lifecycle.
 
-**ISO 26262 (AUTOMOTIVE):**
+**ISO 26262 (Automotive)**
 
-- Titled "Road vehicles - Functional safety", defines funcional safety standards
-specifically for automotive electronic and electrincal systems.
-- It mandates systematic procedures for requirements specification, design,
-implementation, verification, validation and production.
-- Importantly, it demands clearly documented processes and traceability at each
-step.
+- Titled "Road Vehicles: Functional Safety", this standard defines functional safety
+  requirements specifically for automotive electronic and electrical systems.
+- It mandates systematic procedures covering requirements specification, design,
+  implementation, verification, validation, and production.
+- A key requirement is full traceability at each development step, ensuring every
+  design decision can be linked back to a safety requirement.
 
-**MISRA C/C++ Guidelines:**
+**MISRA C / MISRA C++ Guidelines**
 
-- So Misra stands for the Motor Industry Software Reliability Association. And
-over here we're talking about the Misra C and C plus. Plus we have the misra C
-for C code C plus plus for C plus plus code. So the Misra c, C plus Plus is a
-widely adopted coding standard designed specifically to produce safe and
-reliable embedded software.
-- It focuses on avoiding undefined, unspecified, and implementation dependent
-behavior common in C and C plus plus.
+- Published by the Motor Industry Software Reliability Association (MISRA), these
+  guidelines define coding rules for C and C++ respectively, targeting safe and
+  reliable embedded software development.
+- Their focus is on eliminating undefined, unspecified, and implementation-dependent
+  behavior, which are common sources of subtle and hard-to-reproduce defects in C
+  and C++.
 
-**AUTOSAR C++ Guidelines:**
+**AUTOSAR C++ Guidelines**
 
-- Autosar guidelines offer detailed rules for the safe use of modern C plus plus
-in automotive and related safety critical systems. It builds on Misra C Plus plus.
-- These rules provide clear classifications of rules, such as rules that are
-required and those that are just recommended or advised, and guidelines for
-automatic static analysis and manual reviews.
+- The AUTOSAR C++ guidelines provide detailed rules for the safe use of modern C++
+  in automotive and related safety-critical systems, building upon and extending
+  MISRA C++.
+- Rules are clearly classified as required, recommended, or advisory, and are
+  designed to support both automated static analysis tools and manual code reviews.
 
-These rules significantly enhance reliability and safety.
+**DO-178C (Aerospace Software Certification)**
 
-**DO-178C (AEROSPACE SOFTWARE CERTIFICATION):**
+- Formally titled "Software Considerations in Airborne Systems and Equipment
+  Certification", DO-178C is the primary aerospace standard governing software
+  lifecycle processes for airborne systems.
+- Adherence to DO-178C ensures meticulous requirements traceability, comprehensive
+  verification coverage, and high levels of reliability across all defined software
+  levels (DAL A through E).
 
-- So this is often known as the software considerations in Airborne Systems and
-Equipment certification, and is the primary aerospace standard specifying
-requirements for the software life cycle processes.
-- Adherence to Doe 178 ensures meticulous traceability, comprehensive
-verification, and high levels of reliability.
+**IEC 61508 (Industrial Functional Safety)**
 
-**IEC 61508 (INDUSTRIAL FUNCIONAL SAFETY):**
+- This foundational standard defines functional safety requirements for electrical,
+  electronic, and programmable electronic safety-related systems across industries.
+- It provides best practices for reliability engineering, systematic safety analysis,
+  lifecycle management, and risk-based approaches using Safety Integrity Levels
+  (SIL 1 through 4).
 
-- This defines rigorous functional safety guidelines for electrical, electronic
-and programmable electronic safety related systems.
-- It provides best practices for reliability, systematic safety, lifecycle
-management and risk based approaches.
+**IEC 62304 (Medical Device Software)**
 
-**IEC 62304 (MEDICAL DEVICE SOFTWARE):**
-
-- The IEC 62,304 is the medical device software guidelines. This specifies
-lifecycle processes explicitly for medical device software development, ensuring
-stringent safety measures and reliable embedded code management throughout
-software design and deployment.
+- IEC 62304 specifies lifecycle processes for medical device software development,
+  classifying software into safety classes (A, B, or C) based on the potential
+  severity of a failure.
+- It enforces stringent safety measures and structured management practices
+  throughout software design, verification, and deployment.
