@@ -58,3 +58,56 @@ ensuring that a systematic design fault in one unit is unlikely to affect the ot
 Together, these strategies form multiple independent protection layers, each capable
 of detecting and responding to faults in adjacent layers, a principle central to
 standards such as IEC 61508 and ISO 26262.
+
+The software must proactively detect, isolate, and recover from faults, including
+multiple simultaneous faults. Common techniques employed include:
+
+- **Watchdog timers**: continuously monitor system health and trigger a safe reset
+  or fallback operation when a fault is detected within a defined time window.
+- **Redundant components**: multiple independent hardware modules or software
+  channels cross-check each other to maintain critical functions even when one
+  unit fails.
+- **Fail-safe and fail-operational modes**: clearly defined safe states that the
+  system transitions into upon detecting a severe fault, ensuring the system either
+  halts safely or continues operating in a degraded but controlled manner.
+
+## Real-Time Deterministic Behavior
+
+Safety-critical embedded systems typically operate under stringent real-time
+performance requirements. Meeting these requirements involves three key concerns:
+
+**Guaranteed Latency**
+
+Maximum latency constraints must always be met regardless of system load. Any
+task that exceeds its deadline in a safety-critical context is treated as a
+failure, not merely a performance issue.
+
+**Bounded Memory Management**
+
+Static memory allocation or bounded dynamic allocation strategies are used
+alongside Worst-Case Execution Time (WCET) analysis to ensure predictable
+and verifiable runtime behavior. Unbounded dynamic allocation is generally
+avoided, as it introduces non-determinism and fragmentation risks.
+
+**Real-Time Operating Systems**
+
+RTOSes such as SafeRTOS and FreeRTOS provide predictable task scheduling,
+memory management, and resource control. SafeRTOS is a safety-certified
+variant of FreeRTOS, developed specifically to meet the requirements of
+standards such as IEC 61508 and ISO 26262.
+
+## Static Analysis and Formal Verification
+
+**Static Analysis**
+
+Industry-leading static analysis tools such as LDRA, Parasoft, and Helix QAC
+are applied throughout development to detect coding guideline violations,
+potential runtime faults, undefined behavior, and portability issues before
+the code is ever executed.
+
+**Formal Verification**
+
+For the most critical firmware modules, formal verification techniques are
+used to mathematically prove the correctness of the implementation with
+respect to its specification, providing a higher degree of assurance than
+testing alone can achieve.
