@@ -41,3 +41,35 @@ Extensive testing under simulated extreme conditions is a core part of NASA's
 validation approach. Environmental simulations cover temperature extremes,
 radiation exposure, and terrain challenges representative of the Martian surface,
 ensuring that failure modes are identified and addressed well before launch.
+
+## Waymo (Autonomous Vehicles)
+
+Waymo's self-driving platform is one of the most complex safety-critical systems
+in the automotive domain, combining real-time perception, decision making, and
+vehicle control in an environment where failures can directly harm passengers
+and bystanders.
+
+**Standards Compliance**
+
+Waymo follows ISO 26262, enforcing rigorous safety lifecycle processes that
+include hazard analysis, risk assessment, and validation at each development
+stage. MISRA C/C++ guidelines are applied to ensure safe and reliable coding
+practices across the automotive software stack.
+
+**Deterministic Sensor Fusion**
+
+Waymo employs deterministic sensor fusion techniques to combine data from
+multiple sensor modalities, including LiDAR, radar, and cameras, into a
+unified and accurate perception of the surrounding environment. Determinism
+here is critical: the system must produce consistent outputs given the same
+inputs, regardless of timing variations or sensor noise.
+
+**Simulation and Testing**
+
+Waymo extensively uses synthetic simulation environments to test edge cases
+that are too dangerous or impractical to stage physically, such as high-speed
+collisions or complex multi-lane intersections. Real-world driving data
+continuously informs and refines these simulated scenarios. Scenario-based
+verification across millions of driving conditions is used to validate that
+safety-critical decision-making algorithms behave predictably before any
+deployment on public roads.
