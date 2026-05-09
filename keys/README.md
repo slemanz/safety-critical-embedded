@@ -54,3 +54,55 @@ traceability, and documented processes throughout the entire development lifecyc
   severity of a failure.
 - It enforces stringent safety measures and structured management practices
   throughout software design, verification, and deployment.
+
+## Characteristics
+
+When developing safety-critical embedded systems, the following characteristics must always be prioritized.
+
+**Determinism**
+
+The system's behavior must be fully predictable in every scenario, with clearly
+defined timing constraints and bounded memory usage. No operation should produce
+different outcomes under identical conditions.
+
+**Fault Tolerance**
+
+The system must reliably detect, handle, and recover from unexpected hardware
+and software faults without compromising safety. This typically involves
+well-defined failure modes and graceful degradation strategies.
+
+**Redundancy**
+
+Safety-critical systems frequently incorporate redundant hardware components or
+redundant software execution paths to ensure continued safe operation even in
+the presence of partial failures.
+
+**Robustness**
+
+Systems must operate correctly and predictably under abnormal environmental
+conditions, including extreme temperatures, unexpected voltage fluctuations,
+electromagnetic interference, and harsh mechanical stresses.
+
+**Traceability**
+
+Every requirement, design decision, and line of embedded code must be fully
+traceable through detailed documentation linking back to the originating safety
+requirement and the applicable regulatory compliance framework.
+
+Tools commonly used for traceability include IBM DOORS and Siemens Polarion.
+Both provide centralized requirement storage, bidirectional linking between
+artifacts such as test cases and source code, version control integration, and
+reporting capabilities that support audit and impact analysis.
+
+**Testability and Verifiability**
+
+All components must be designed to facilitate thorough testing and verification.
+Techniques such as static analysis, formal verification, unit testing,
+integration testing, and system-level testing are applied rigorously throughout
+the development lifecycle.
+
+**Simplicity and Understandability**
+
+In safety-critical contexts, complex code increases the risk of hiding subtle
+faults. Clarity, simplicity, and readability are therefore prioritized to
+support maintainability, ease of code reviews, and effective static analysis.
