@@ -1,7 +1,9 @@
 CC = arm-none-eabi-gcc
 LD = arm-none-eabi-gcc
 SIZE = arm-none-eabi-size
-OBJCOPY = arm-none-eabi-size
+OBJCOPY = arm-none-eabi-objcopy
+
+JLINK = jlink
 
 RM = rm -rf
 
@@ -9,7 +11,7 @@ TARGET = flash
 DIR_BUILD = build
 
 MCU = -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb
-CFLAGS = $(MCU) -std=gnu11 -DSTM32L432xx -Wall -O0 -ffunction-sections -fdata-sections
+CFLAGS = -c $(MCU) -std=gnu11 -DSTM32F411xE -Wall -O0 -ffunction-sections -fdata-sections
 LDFLAGS = $(MCU) -Tdrivers/Device/STM32F411.ld --specs=nano.specs --specs=nosys.specs -Wl,--gc-sections
 
 INCLUDES =	-Idrivers/Device/cmsis \
@@ -31,6 +33,14 @@ $(DIR_BUILD)/%.o: app/Src/%.c
 
 $(DIR_BUILD)/%.o: drivers/Device/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(DIR_BUILD)/$(*).o drivers/Device/$(*).c
+
+$(DIR_BUILD)/$(TARGET).elf: $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^
+	$(OBJCOPY) -O binary $(DIR_BUILD)/$(TARGET).elf $(DIR_BUILD)/$(TARGET).bin
+	$(SIZE) $(DIR_BUILD)/$(TARGET).elf
+
+flash:
+	@$(JLINK) -CommanderScript flash.jlink >/dev/null 2>&1 && echo "Flash Finished"
 
 clean:
 	$(RM) $(DIR_BUILD)
