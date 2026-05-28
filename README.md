@@ -64,3 +64,5 @@ verification, and strict adherence to industry-specific standards and guidelines
 - Keys
 - Considerations
 - Cases
+- MISRA
+- MISRA Fundamentals
