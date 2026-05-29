@@ -137,3 +137,75 @@ apply at each scope and systematically ensuring their enforcement throughout
 the software lifecycle. Misclassifying a system-wide rule as a local concern
 is a common source of compliance gaps, as the tool may report no violations
 within a single file while the project as a whole remains non-compliant.
+
+## The Role of Documentation and Traceability
+
+MISRA compliance fundamentally relies on meticulous documentation and
+traceability. The documentation supporting a MISRA-compliant project
+typically includes three core artifacts:
+
+**Guideline Enforcement Plan (GEP)**
+
+The GEP defines how each MISRA rule and directive is enforced within a
+specific project. It documents which checks are performed by automated
+static analysis tools, which depend on manual review, and who holds
+responsibility for enforcement at each stage of the development process.
+
+**Guideline Compliance Summary (GCS)**
+
+The GCS provides a comprehensive overview of the project's compliance
+status. It summarizes adherence to MISRA guidelines, lists any rules that
+are not fully observed, and serves as the consolidated reference reviewed
+during audits and certification activities.
+
+**Deviation Records**
+
+Deviation records document every permissible departure from a MISRA
+guideline, including the rationale for the deviation, an impact analysis
+explaining why it does not compromise safety, and the approvals required
+to accept it. Disciplined deviation management is what distinguishes a
+controlled exception from an undocumented violation.
+
+Together, these artifacts ensure full traceability from initial requirements
+through code implementation, testing, and validation, ultimately supporting
+certification or regulatory compliance with standards such as ISO 26262,
+IEC 61508, and DO-178C.
+
+## Deviations
+
+In practice, complete adherence to every MISRA rule is sometimes impractical
+or impossible due to specific project requirements, hardware constraints, or
+the use of legacy or third-party code. MISRA explicitly accommodates these
+situations through a structured deviation management process, in which a
+deviation is permissible only if it is carefully justified, documented, and
+controlled.
+
+### Common Justifications
+
+Typical reasons for an approved deviation include:
+
+- **Hardware limitations** that make compliance with a given rule technically
+  infeasible on the target platform.
+- **Integration with third-party code** that is not itself MISRA-compliant
+  and cannot reasonably be modified.
+- **Performance constraints** that are themselves critical to safety or
+  real-time behavior, where compliance would introduce unacceptable overhead.
+
+### Required Documentation
+
+Every deviation must be clearly documented, capturing at minimum:
+
+- The MISRA rule or directive being deviated from.
+- The justification for the deviation, including the rationale and the
+  context in which it applies.
+- The potential risks introduced by the deviation and the mitigation
+  measures applied to control them.
+- The approval signatures from the responsible authorities, demonstrating
+  that the deviation has been formally accepted.
+- A schedule for periodic review, ensuring deviations are reassessed as the
+  project evolves and remain valid over time.
+
+This systematic approach ensures that deviations do not silently accumulate
+or compromise overall system safety and reliability. A well-managed
+deviation is an explicit, justified exception; an undocumented one is
+simply a defect waiting to be discovered.
