@@ -24,6 +24,7 @@ OBJS += $(DIR_BUILD)/startup.o
 DRIVERS += $(DIR_BUILD)/fpu.o
 DRIVERS += $(DIR_BUILD)/uart.o
 DRIVERS += $(DIR_BUILD)/timebase.o
+DRIVERS += $(DIR_BUILD)/bsp.o
 
 PREREQ = $(DIR_BUILD)/
 
