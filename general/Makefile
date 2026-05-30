@@ -22,6 +22,7 @@ OBJS += $(DIR_BUILD)/syscalls.o
 OBJS += $(DIR_BUILD)/startup.o
 
 DRIVERS += $(DIR_BUILD)/fpu.o
+DRIVERS += $(DIR_BUILD)/uart.o
 
 PREREQ = $(DIR_BUILD)/
 
