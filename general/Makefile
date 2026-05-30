@@ -21,6 +21,8 @@ OBJS += $(DIR_BUILD)/main.o
 OBJS += $(DIR_BUILD)/syscalls.o
 OBJS += $(DIR_BUILD)/startup.o
 
+DRIVERS += $(DIR_BUILD)/fpu.o
+
 PREREQ = $(DIR_BUILD)/
 
 all: $(PREREQ) $(DIR_BUILD)/$(TARGET).elf
@@ -34,7 +36,10 @@ $(DIR_BUILD)/%.o: app/Src/%.c
 $(DIR_BUILD)/%.o: drivers/Device/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(DIR_BUILD)/$(*).o drivers/Device/$(*).c
 
-$(DIR_BUILD)/$(TARGET).elf: $(OBJS)
+$(DIR_BUILD)/%.o: drivers/Src/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(DIR_BUILD)/$(*).o drivers/Src/$(*).c
+
+$(DIR_BUILD)/$(TARGET).elf: $(OBJS) $(DRIVERS)
 	$(CC) $(LDFLAGS) -o $@ $^
 	$(OBJCOPY) -O binary $(DIR_BUILD)/$(TARGET).elf $(DIR_BUILD)/$(TARGET).bin
 	$(SIZE) $(DIR_BUILD)/$(TARGET).elf
