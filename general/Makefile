@@ -11,7 +11,7 @@ TARGET = flash
 DIR_BUILD = build
 
 MCU = -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb
-CFLAGS = -c $(MCU) -std=gnu11 -DSTM32F411xE -Wall -O0 -ffunction-sections -fdata-sections
+CFLAGS = -c $(MCU) -std=gnu11 -DSTM32F411xE -Wall -O0 -g3 -ffunction-sections -fdata-sections
 LDFLAGS = $(MCU) -Tdrivers/Device/STM32F411.ld --specs=nano.specs --specs=nosys.specs -Wl,--gc-sections
 
 INCLUDES =	-Idrivers/Device/cmsis \
