@@ -3,11 +3,13 @@
 #include "stm32f411xe.h"
 #include "fpu.h"
 #include "uart.h"
+#include "timebase.h"
 
 int main(void)
 {
     fpu_enable();
     debug_uart_init();
+    timebase_init();
 
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
 
@@ -20,6 +22,6 @@ int main(void)
     while(1)
     {
         GPIOC->ODR ^= (1U << 13);
-        for (volatile uint32_t i = 0; i < 1000000; i++);
+        tick_delay(1);
     }
 }
