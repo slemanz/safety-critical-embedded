@@ -11,6 +11,7 @@ int main(void)
     debug_uart_init();
     timebase_init();
     led_init();
+    button_init();
 
     printf("Hello world!\r\n");
     printf("Debug in on!\r\n");
@@ -18,7 +19,13 @@ int main(void)
 
     while(1)
     {
-        led_toggle();
-        tick_delay(1);
+        if(button_get_state())
+        {
+            led_on();
+        }
+        else
+        {
+            led_off();
+        }
     }
 }
