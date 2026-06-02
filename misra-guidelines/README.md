@@ -125,3 +125,48 @@ context without compromising safety, reliability, or regulatory compliance.
 Used responsibly, it is a controlled mechanism for engineering judgment;
 used carelessly, it becomes a backdoor for weakening compliance, which is
 exactly what disciplined documentation and review are meant to prevent.
+
+## Practical Considerations for Implementing Guideline Classifications
+
+To put MISRA guideline classifications into practice effectively, an
+organization must translate the theoretical categories into concrete
+process, tooling, and documentation decisions. The following four areas
+cover the most important practical considerations.
+
+### 1. Clearly Document Guideline Classifications
+
+Maintain comprehensive records that clearly indicate which guidelines are
+mandatory, required, or advisory in the context of the current project.
+These classifications must be easily accessible to every member of the
+development team, ideally embedded in the project's coding standard or a
+linked reference document, so that developers can determine the status of
+any rule without ambiguity.
+
+### 2. Integrate Classifications into Compliance Verification Tools
+
+Static analysis tools should be configured to clearly distinguish between
+the different guideline classifications. This typically means:
+
+- Automatically enforcing strict compliance checks for mandatory and
+  required guidelines, treating their violations as build-breaking errors.
+- Producing clear, distinguishable reports that indicate the classification
+  of each violation, enabling targeted resource allocation and prioritization
+  of corrective actions.
+
+### 3. Prioritize Manual Reviews Accordingly
+
+Schedule manual code reviews focusing primarily on undecidable or subjective
+rules classified as mandatory or required, where automated tools cannot
+reach a conclusive verdict on their own. Adherence to advisory guidelines
+should be reviewed periodically as well, but with lower priority, in order
+to maintain overall code quality without unnecessary expenditure of
+engineering effort.
+
+### 4. Maintain Thorough Documentation
+
+All deviations from required guidelines must be documented thoroughly,
+clearly articulating the justification, the risks introduced, and the
+periodic review procedures applied to each one. For advisory guidelines,
+the general adherence policy and any standing exceptions should also be
+documented so that they are available for reference during audits and
+inspections.
