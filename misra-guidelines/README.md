@@ -170,3 +170,42 @@ periodic review procedures applied to each one. For advisory guidelines,
 the general adherence policy and any standing exceptions should also be
 documented so that they are available for reference during audits and
 inspections.
+
+## Benefits of Proper Guideline Classification and Enforcement
+
+Properly classifying and enforcing MISRA guidelines provides several critical
+benefits that compound over the life of a safety-critical project.
+
+**Improved Resource Efficiency**
+
+Classification allows engineering effort and compliance verification
+resources to be concentrated on the most safety-critical aspects of the
+software, rather than spread evenly across rules of very different
+importance.
+
+**Enhanced Regulatory Compliance**
+
+By implementing guideline classification and enforcement, an organization
+can clearly demonstrate systematic prioritization and adherence to
+safety-critical requirements, simplifying regulatory audits and certification
+processes for standards such as ISO 26262, IEC 61508, and DO-178C.
+
+**Reduced Risk of Software Failure**
+
+Strict compliance with mandatory and required guidelines significantly
+reduces the likelihood of severe software defects and system-critical
+failures reaching production, where their consequences would be the most
+costly to address.
+
+**Improved Software Quality and Maintainability**
+
+Consistent adherence even to advisory guidelines promotes readable,
+maintainable, and reliable software, lowering long-term maintenance cost
+and making the codebase easier to evolve safely.
+
+Effective classification and enforcement of MISRA guidelines is foundational
+to achieving sustainable, efficient, and meaningful compliance. Clearly
+distinguishing mandatory, required, and advisory guidelines enables targeted
+allocation of resources, streamlined verification processes, and simplified
+deviation management, turning MISRA from a static set of rules into an
+operational discipline integrated into the day-to-day work of the team.
