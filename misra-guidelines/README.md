@@ -91,3 +91,37 @@ Advisory guidelines:
 A representative example would be:
 
 *"Use explicit parentheses in complex arithmetic expressions for clarity."*
+
+## Guideline Re-categorization Plans (GRP)
+
+MISRA acknowledges that projects may have unique requirements that
+necessitate adjusting or reclassifying certain guidelines to manage their
+specific situations effectively. To handle this in a controlled way,
+organizations may develop a **Guideline Re-categorization Plan (GRP)**,
+which explicitly documents any deviation from the standard classification
+of guidelines.
+
+A well-structured GRP typically includes the following elements:
+
+- **Original guideline classification**: whether the guideline was
+  originally defined as mandatory, required, or advisory.
+- **Proposed reclassification**: the new category being applied, for example
+  moving a guideline from required to advisory, recorded clearly so the
+  change is auditable.
+- **Justification for the reclassification**: a detailed rationale covering
+  the technical and project-specific reasons motivating the change.
+- **Risk assessment and mitigation strategies**: an evaluation of the risks
+  introduced by the reclassification and the measures applied to keep those
+  risks under control.
+- **Review and approval procedures**: documented approval by project leads,
+  quality managers, or compliance authorities, confirming that the change
+  has been formally accepted.
+- **Periodic reassessment plan**: a clearly documented process for reviewing
+  and re-justifying each reclassification at regular intervals, ensuring it
+  remains valid as the project evolves.
+
+A GRP enables an organization to adapt MISRA guidelines to its project-specific
+context without compromising safety, reliability, or regulatory compliance.
+Used responsibly, it is a controlled mechanism for engineering judgment;
+used carelessly, it becomes a backdoor for weakening compliance, which is
+exactly what disciplined documentation and review are meant to prevent.
