@@ -379,3 +379,65 @@ that is extremely difficult to diagnose after the fact.
   and division by zero.
 - Use static analysis to detect potential arithmetic overflow or wraparound
   conditions proactively, before they manifest as defects at runtime.
+
+## Category 5: Preprocessor Directives
+
+Excessive or improper use of preprocessor directives can significantly
+reduce code readability, maintainability, and debugging clarity, because
+preprocessing happens before the compiler proper sees the code and can
+silently rewrite program text in surprising ways.
+
+**Example rules**
+
+*"`#include` directives should only be preceded by other preprocessor
+directives or comments."*
+
+The rationale is to enhance readability by clearly organizing header
+inclusions at the top of the translation unit, where they can be reviewed
+as a whole.
+
+*"Macro definitions shall not redefine object-like functions or language
+keywords."*
+
+The rationale is to prevent the misuse of macros, which can otherwise lead
+to confusing behavior or hide language semantics behind identifiers that
+look familiar but no longer mean what the reader expects.
+
+**Compliance recommendations**
+
+- Limit macro usage primarily to constants and configuration parameters,
+  avoiding the use of macros to emulate functions or control flow.
+- Clearly document every macro with meaningful comments describing its
+  purpose, expected operands, and any side effects.
+- Prefer language-level constructs such as `inline` functions, `const`
+  variables, and `enum` constants over macros wherever possible, since
+  these participate in the language's type system and are visible to the
+  debugger.
+
+## Category 6: Dynamic Memory Management
+
+Dynamic memory allocation poses significant risks in safety-critical
+software due to the potential for memory leaks, fragmentation, and
+unpredictable behavior in real-time systems where allocation times cannot
+be bounded reliably.
+
+**Example rule**
+
+*"Dynamic memory allocation shall not be used."*
+
+The rationale is to ensure deterministic resource management and eliminate
+the risk of memory leaks, fragmentation, and unbounded allocation latency
+that are inherent to heap-based allocators.
+
+**Compliance recommendations**
+
+- Use static or stack-based memory allocation exclusively, especially in
+  safety-critical embedded systems where worst-case execution time and
+  memory footprint must be known in advance.
+- Enforce rigorous resource management discipline during development and
+  code reviews, including clear ownership rules for any pre-allocated
+  buffers or memory pools.
+- Configure compliance verification tools to explicitly flag any use of
+  dynamic memory allocation functions such as `malloc`, `calloc`,
+  `realloc`, and `free`, so that an inadvertent introduction of heap usage
+  is caught immediately.
