@@ -238,3 +238,76 @@ recommendations.
 > illustrate each category. Organizations applying MISRA in practice must
 > obtain the official MISRA C and MISRA C++ documents to access the complete
 > set of rules.
+
+## Category 1: Type Conversions and Type Safety
+
+The first category of MISRA C rules deals with type conversions and type
+safety. Unsafe type conversions in C are a common source of software defects,
+frequently leading to integer overflow, unexpected type promotions, or silent
+data corruption.
+
+**Example rules**
+
+*"The value of a complex expression shall not be cast to a narrower type
+unless explicitly intended."*
+
+The rationale is to prevent unintended data loss or overflow caused by
+narrowing conversions that the developer did not consciously choose.
+
+*"Both operands of an arithmetic operation shall have the same essential
+type category."*
+
+The rationale is to prevent type-promotion confusion, unexpected runtime
+behavior, and subtle arithmetic errors that arise when operands of mixed
+signedness or width are combined.
+
+**Compliance recommendations**
+
+- Always cast operands explicitly when performing arithmetic operations
+  involving different data types, so that intent is visible in the source
+  code rather than hidden in the compiler's implicit conversion rules.
+- Systematically verify type correctness during code reviews, treating
+  implicit conversions as deliberate design choices that must be justified.
+- Configure static analysis tools to flag unsafe implicit type conversions
+  immediately, ideally at build time, so that issues are caught before they
+  reach review.
+
+## Category 2: Pointer and Array Handling
+
+Pointers and arrays are fundamental yet dangerous features of the C language.
+Improper handling can lead to memory violations, buffer overflows, and
+security vulnerabilities that are difficult to detect through testing alone.
+
+**Example rules**
+
+*"Pointer arithmetic shall only be applied to pointers that address an array
+or array element."*
+
+The rationale is to avoid undefined behavior caused by manipulating pointers
+that do not reference a valid array element.
+
+*"Subtraction between pointers shall only be applied to pointers addressing
+the same array."*
+
+The rationale is to prevent undefined results when computing distances
+between pointers that belong to different memory regions.
+
+*"Relational operators (`>`, `>=`, `<`, `<=`) shall only be applied to
+pointers addressing elements of the same array."*
+
+The rationale is the same as above: comparing pointers from unrelated
+allocations produces undefined behavior, even though the comparison may
+appear to "work" on a particular compiler and target.
+
+**Compliance recommendations**
+
+- Clearly document pointer usage to ensure that every pointer references a
+  valid memory region with a known lifetime.
+- Enforce strict bounds checking and pointer validation during code reviews,
+  treating any pointer arithmetic as a deliberate design decision that must
+  be justified.
+- Use static analysis tools to rigorously detect pointer arithmetic
+  violations early, before they propagate into runtime defects that are far
+  more expensive to diagnose.
+
+
