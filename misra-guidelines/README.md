@@ -209,3 +209,32 @@ distinguishing mandatory, required, and advisory guidelines enables targeted
 allocation of resources, streamlined verification processes, and simplified
 deviation management, turning MISRA from a static set of rules into an
 operational discipline integrated into the day-to-day work of the team.
+
+## Overview of MISRA C Guidelines
+
+This section examines several important MISRA C language-specific rules,
+providing practical insight into their importance, the rationale behind
+them, and strategies for effective compliance.
+
+MISRA C rules specifically target unsafe, ambiguous, or undefined language
+features that are prone to developer error and can lead to unintended
+behavior or security vulnerabilities. The rules are grouped into the
+following language-specific categories:
+
+- **Type conversions and type safety**
+- **Pointer and array handling**
+- **Control flow and statement usage**
+- **Expressions and arithmetic operations**
+- **Preprocessor directives**
+- **Dynamic memory management**
+
+For each category, this section presents representative example rules,
+explains the purpose of the category, and provides general compliance
+recommendations.
+
+> **Note on copyright:** The MISRA C and MISRA C++ documents are copyrighted
+> publications. For that reason, this material does not reproduce the full
+> rule set; only representative examples are presented under fair use to
+> illustrate each category. Organizations applying MISRA in practice must
+> obtain the official MISRA C and MISRA C++ documents to access the complete
+> set of rules.
