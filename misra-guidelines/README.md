@@ -311,3 +311,71 @@ appear to "work" on a particular compiler and target.
   more expensive to diagnose.
 
 
+## Category 3: Control Flow and Statement Usage
+
+Clear and predictable control flow is essential in safety-critical systems.
+Ambiguous or unsafe control structures significantly increase the risk of
+defects that are difficult to detect through review or testing alone. This
+category targets language constructs that obscure program flow or invite
+subtle mistakes.
+
+**Example rules**
+
+*"The `goto` statement should not be used."*
+
+The rationale is to eliminate unstructured jumps that complicate program
+flow, reducing overall complexity and improving readability and
+maintainability of the source code.
+
+*"The body of an iteration statement, such as a `while` or `for` loop,
+should be a compound statement."*
+
+The rationale is to avoid the accidental execution of single-statement
+loops, where the absence of braces can lead a developer to misread the
+loop's scope, particularly when the loop body is later extended.
+
+**Compliance recommendations**
+
+- Adopt clear, structured programming practices and avoid unnecessary or
+  unconventional control structures that obscure intent.
+- Replace `goto` statements with structured loop constructs, helper
+  functions, or explicit state machines, all of which make the program flow
+  more visible.
+- Consistently enclose loop and conditional bodies within braces, even when
+  a single statement would syntactically suffice, so that scope is
+  unambiguous to both readers and future maintainers.
+
+## Category 4: Expressions and Arithmetic Operations
+
+Arithmetic operations in C can produce unintended behavior such as integer
+overflow, division by zero, or unexpected results caused by operator
+precedence ambiguities. This category targets the language features most
+prone to producing silently incorrect results.
+
+**Example rules**
+
+*"Limited dependence should be placed on C's operator precedence rules in
+complex expressions."*
+
+The rationale is to avoid relying solely on the implicit precedence rules of
+the language. Instead, expressions should be guarded by explicit parentheses
+that make the intended evaluation order obvious, eliminating
+misunderstandings caused by precedence confusion.
+
+*"Evaluation of constant expressions shall not lead to unsigned integer
+wraparound."*
+
+The rationale is to prevent arithmetic wraparound or overflow, which can
+silently produce incorrect values and lead to unexpected runtime behavior
+that is extremely difficult to diagnose after the fact.
+
+**Compliance recommendations**
+
+- Use explicit parentheses in complex expressions to clarify the intended
+  evaluation order, even when the language would compute the same result
+  without them.
+- Validate arithmetic expressions carefully during code reviews, explicitly
+  considering boundary conditions such as maximum values, minimum values,
+  and division by zero.
+- Use static analysis to detect potential arithmetic overflow or wraparound
+  conditions proactively, before they manifest as defects at runtime.
