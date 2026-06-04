@@ -151,3 +151,21 @@ static Status_t GPIO_EnableClock(GPIO_Port_t port)
 
     return status;
 }
+
+Status_t GPIO_Init(void)
+{
+    Status_t status = STATUS_OK;
+    uint32_t i = 0U;
+
+    /* Initialize tracking arrays */
+    for(i = 0U; i < GPIO_PORT_COUNT; i++)
+    {
+        gpio_output_pins[i] = 0U;
+        gpio_initialized_pins[i] = 0U;
+    }
+
+    /* Mark driver as initialized */
+    gpio_initialized = 1U;
+
+    return status;
+}
