@@ -34,3 +34,44 @@
  /* Pin configuration tracking - for validation of operations */
  static uint16_t gpio_output_pins[GPIO_PORT_COUNT] = {0U};
  static uint16_t gpio_initialized_pins[GPIO_PORT_COUNT] = {0U};
+
+ /**
+  * @brief Access the appropriate GPIO register safely
+  * 
+  * Safely converts the port enum to the actual peripheral register base address.
+  * This function provides controlled access to memory-mapped registers.
+  * 
+  * @param[in] port The GPIO port
+  * @return GPIO_TypeDef* Pointer to the corresponding GPIO register block
+  */
+ static GPIO_TypeDef* GPIO_GetPortRegister(GPIO_Port_t port)
+ {
+    GPIO_TypeDef *gpio_regs = NULL;
+
+    switch(port){
+        case GPIO_PORT_A:
+            gpio_regs = GPIOA;
+            break;
+        case GPIO_PORT_B:
+            gpio_regs = GPIOB;
+            break;
+        case GPIO_PORT_C:
+            gpio_regs = GPIOC;
+            break;
+        case GPIO_PORT_D:
+            gpio_regs = GPIOD;
+            break;
+        case GPIO_PORT_E:
+            gpio_regs = GPIOE;
+            break;
+        case GPIO_PORT_H:
+            gpio_regs = GPIOH;
+            break;
+        default:
+            /* Invalid port, return NULL */
+            gpio_regs = NULL;
+            break;
+    }
+
+    return gpio_regs;
+ }
