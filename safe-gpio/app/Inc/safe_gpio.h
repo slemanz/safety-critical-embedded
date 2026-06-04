@@ -144,6 +144,33 @@ Status_t GPIO_Init(void);
  */
 Status_t GPIO_PinInit(const GPIO_Config_t* config);
 
+/**
+ * @brief Read the current state of GPIO pin
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @param[in] state The state to set (GPIO_PIN_SET or GPIO_PIN_RESET)
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin state set successfully
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Pin not initialized
+ */
+Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state);
+
+/**
+ * @brief Read the current state of GPIO pin
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @param[in] state Pointer to store the pin state
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin state read successfully
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Pin not initialized
+ * @retval STATUS_ERROR_NULL Null pointer provided
+ */
+Status_t GPIO_ReadPin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t* state);
+
 
 
 #endif /* INC_SAFE_GPIO_H */
