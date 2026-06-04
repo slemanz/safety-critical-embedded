@@ -97,4 +97,27 @@ typedef enum{
     GPIO_PULL_DOWN = 2U, /**< Pull-down */
 }GPIO_Pull_t;
 
+/**
+ * @brief GPIO pin configuration structure
+ * 
+ * This structure holds all configuration parameters for GPIO pin.
+ */
+typedef struct{
+    GPIO_Port_t     port;       /**< GPIO port */
+    GPIO_Pin_t      pin;        /**< GPIO pin */
+    GPIO_Mode_t     mode;       /**< Mode (input, output, alternate, analog) */
+    GPIO_OutputType_t otype;    /**< Output type (push-pull, open-drain) */
+    GPIO_Speed_t    speed;      /**< Output speed */
+    GPIO_Pull_t     pull;       /**< Pull-up/pull-down configuration */
+    uint8_t         alternate;  /**< Alternate function number (0-15) */
+}GPIO_Config_t;
+
+/**
+ * @brief GPIO pin state
+ */
+typedef enum{
+    GPIO_PIN_RESET = 0U,
+    GPIO_PIN_SET   = 1U
+}GPIO_PinState_t;
+
 #endif /* INC_SAFE_GPIO_H */
