@@ -29,6 +29,8 @@ typedef enum{
     GPIO_PORT_C = 2U,
     GPIO_PORT_D = 3U,
     GPIO_PORT_E = 4U,
+    GPIO_PORT_RESERVERD1 = 5U,
+    GPIO_PORT_RESERVERD2 = 6U,
     GPIO_PORT_H = 7U,
     GPIO_PORT_COUNT
 }GPIO_Port_t;

@@ -75,3 +75,36 @@
 
     return gpio_regs;
  }
+
+ /**
+  * @brief Check if a GPIO port is valid
+  * 
+  * @param[in] port The GPIO port to check
+  * @return bool True if valid, false otherwise
+  */
+static bool GPIO_IsValidPort(GPIO_Port_t port)
+{
+    return (port < GPIO_PORT_COUNT) && (port != GPIO_PORT_RESERVERD1) && (port != GPIO_PORT_RESERVERD2);
+}
+
+/**
+ * @brief Check if a GPIO pin is valid
+ * 
+ * @param[in] pin The GPIO pin to check
+ * @return bool True if valid, false otherwise
+ */
+static bool GPIO_IsValidPin(GPIO_Pin_t pin)
+{
+    return (pin < GPIO_PIN_COUNT);
+}
+
+/**
+ * @brief Check if an alternate function is valid
+ * 
+ * @param[in] alternate The alternate function is valid
+ * @return bool True if valid, false otherwise
+ */
+static bool GPIO_IsValidAlternate(uint8_t alternate)
+{
+    return (alternate <= 15U);
+}
