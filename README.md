@@ -67,3 +67,4 @@ verification, and strict adherence to industry-specific standards and guidelines
 - MISRA
 - MISRA Fundamentals
 - MISRA Essential
+- Safe GPIO
