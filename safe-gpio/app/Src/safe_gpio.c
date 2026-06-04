@@ -108,3 +108,46 @@ static bool GPIO_IsValidAlternate(uint8_t alternate)
 {
     return (alternate <= 15U);
 }
+
+/**
+ * @brief Enable the clock for a specific GPIO port
+ * 
+ * @param[in] port The GPIO port
+ * @return Status_t Operation status
+ */
+static Status_t GPIO_EnableClock(GPIO_Port_t port)
+{
+    Status_t status = STATUS_OK;
+
+    if(!GPIO_IsValidPort(port)){
+        status = STATUS_ERROR_PARAM;
+    }else{
+        // enable the corresponding GPIO port clock in RCC
+        switch (port){
+            case GPIO_PORT_A:
+                RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+                break;
+            case GPIO_PORT_B:
+                RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+                break;
+            case GPIO_PORT_C:
+                RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+                break;
+            case GPIO_PORT_D:
+                RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+                break;
+            case GPIO_PORT_E:
+                RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+                break;
+            case GPIO_PORT_H:
+                RCC->AHB1ENR |= RCC_AHB1ENR_GPIOHEN;
+                break;
+            default:
+                /* This shouldnt happen due to prior validation */
+                status = STATUS_ERROR_PARAM;
+                break;
+        }
+    }
+
+    return status;
+}
