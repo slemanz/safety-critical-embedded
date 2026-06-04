@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "safe_status.h"
 
 /**
  * @brief GPIO port identifiers with strong typing
@@ -119,5 +120,30 @@ typedef enum{
     GPIO_PIN_RESET = 0U,
     GPIO_PIN_SET   = 1U
 }GPIO_PinState_t;
+
+/**
+ * @brief Initialize the GPIO driver subsystem
+ * 
+ * This function must be called before any other GPIO functions.
+ * 
+ * @return Status_t operation status
+ * @retval STATUS_OK Driver initialized succesfully
+ * @retval STATUS_ERROR_INIT Initizlization failed
+ */
+Status_t GPIO_Init(void);
+
+/**
+ * @brief Initialize a GPIO pin with the specified configuration
+ * 
+ * @param[in] config Pointer to the GPIO pin configuration
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin initialized succesfully
+ * @retval STATUS_ERROR_NULL Null pointer provided
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Driver not initialized
+ */
+Status_t GPIO_PinInit(const GPIO_Config_t* config);
+
+
 
 #endif /* INC_SAFE_GPIO_H */
