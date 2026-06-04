@@ -162,7 +162,7 @@ Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state);
  * 
  * @param[in] port GPIO port
  * @param[in] pin GPIO pin
- * @param[in] state Pointer to store the pin state
+ * @param[out] state Pointer to store the pin state
  * @return Status_t Operation status
  * @retval STATUS_OK Pin state read successfully
  * @retval STATUS_ERROR_PARAM Invalid parameter
@@ -171,6 +171,37 @@ Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state);
  */
 Status_t GPIO_ReadPin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t* state);
 
+/**
+ * @brief Toggle the state of a GPIO pin
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin toggled successfully
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Pin not initialized as output
+ */
+Status_t GPIO_TogglePin(GPIO_Port_t port, GPIO_Pin_t pin);
+
+/**
+ * @brief Safely shutdown the GPIO Driver subsystem
+ * 
+ * @return Status_t Operation status
+ * @retval STATUS_OK Driver shutdown succesfully
+ */
+Status_t GPIO_DeInit(void);
+
+/**
+ * @brief Get GPIO driver version information
+ * 
+ * @param[out] major Pointer to store major version number
+ * @param[out] minor Pointer to store minor version number
+ * @param[out] patch Pointer to store patch version number
+ * @return Status_t Operation status
+ * @retval STATUS_OK Version information retrieved
+ * @retval STATUS_ERROR_NULL Null pointer provided
+ */
+Status_t GPIO_GetVersion(uint8_t* major, uint8_t* minor, uint8_t* patch);
 
 
 #endif /* INC_SAFE_GPIO_H */
