@@ -217,4 +217,24 @@ Status_t GPIO_PinInit(const GPIO_Config_t* config)
     reg_value &= ~(3UL << (pin_index * GPIO_MODE_BITS)); /* clear mode bits */
     reg_value |= ((uint32_t)config->mode << (pin_index * GPIO_MODE_BITS)); /* Set new mode */
     gpio_regs->MODER = reg_value;
+
+    /* Configure the output type (push-pull or open-drain)*/
+    reg_value = gpio_regs->OTYPER;
+    reg_value &= ~(1UL << pin_index); /* Clear output type bit */
+    reg_value |= ((uint32_t)config->otype << pin_index); /* Set new output type */
+    gpio_regs->OTYPER = reg_value;
+
+    /* Configure the output speed */
+    reg_value = gpio_regs->OSPEEDR;
+    reg_value &= ~(3UL << (pin_index * GPIO_OSPEED_BITS)); /* Clear output speed bits */
+    reg_value |= ((uint32_t)config->speed << (pin_index * GPIO_OSPEED_BITS)); /* Set new output speed */
+    gpio_regs->OSPEEDR = reg_value;
+
+    /* Configure the pull-up/pull-down resistors */
+    reg_value = gpio_regs->PUPDR;
+    reg_value &= ~(3UL << (pin_index * GPIO_PUPD_BITS)); /* Clear pull-up/pull-down bits */
+    reg_value |= ((uint32_t)config->pull << (pin_index * GPIO_PUPD_BITS)); /* Set new pull-up/pull-down */
+    gpio_regs->PUPDR = reg_value;
+
+    return status;
 }
