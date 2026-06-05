@@ -252,5 +252,15 @@ Status_t GPIO_PinInit(const GPIO_Config_t* config)
         gpio_regs->AFR[temp] = reg_value;
     }
 
-    return status;
+    /* Update tracking for initialized pins */
+    gpio_initialized_pins[config->port] |= GPIO_PIN_MASK(config->pin);
+
+    /* Update tracking for output pins */
+    if(config->mode == GPIO_MODE_OUTPUT){
+        gpio_output_pins[config->port] |= GPIO_PIN_MASK(config->pin);
+    }else{
+        gpio_output_pins[config->port] &= ~GPIO_PIN_MASK(config->pin);
+    }
+
+    return STATUS_OK;
 }
