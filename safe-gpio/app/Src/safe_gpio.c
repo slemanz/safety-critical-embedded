@@ -236,5 +236,21 @@ Status_t GPIO_PinInit(const GPIO_Config_t* config)
     reg_value |= ((uint32_t)config->pull << (pin_index * GPIO_PUPD_BITS)); /* Set new pull-up/pull-down */
     gpio_regs->PUPDR = reg_value;
 
+    /* Configure the alternate function */
+    if(config->mode == GPIO_MODE_ALT){
+        /* Select the appropriate alternate function register (AFR[0] to pins 0-7, AFR[1] for pins 8-15) */
+        if(pin_index < 8U){
+            temp = 0U;
+        }else{
+            temp = 1U;
+            pin_index -= 8U;
+        }
+
+        reg_value = gpio_regs->AFR[temp];
+        reg_value &= ~(0xFUL << (pin_index * GPIO_AFR_BITS)); /* Clear alternate function bits */
+        reg_value |= ((uint32_t)config->alternate << (pin_index * GPIO_AFR_BITS)); /* Set new alternate function */
+        gpio_regs->AFR[temp] = reg_value;
+    }
+
     return status;
 }
