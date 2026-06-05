@@ -210,4 +210,11 @@ Status_t GPIO_PinInit(const GPIO_Config_t* config)
     if(gpio_regs == NULL){
         return STATUS_ERROR_PARAM;
     }
+
+    /* Configure the GPIO pin mode (input, output, alternate, analog) */
+    pin_index = (uint32_t)config->pin;
+    reg_value = gpio_regs->MODER;
+    reg_value &= ~(3UL << (pin_index * GPIO_MODE_BITS)); /* clear mode bits */
+    reg_value |= ((uint32_t)config->mode << (pin_index * GPIO_MODE_BITS)); /* Set new mode */
+    gpio_regs->MODER = reg_value;
 }
