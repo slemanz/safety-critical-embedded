@@ -169,3 +169,45 @@ Status_t GPIO_Init(void)
 
     return status;
 }
+
+Status_t GPIO_PinInit(const GPIO_Config_t* config)
+{
+    /* Some local variables */
+    Status_t status = STATUS_OK;
+    GPIO_TypeDef* gpio_regs;
+    uint32_t pin_index;
+    uint32_t reg_value;
+    uint32_t temp;
+
+    /* Validate inputs */
+    if(config == NULL){
+        return STATUS_ERROR_PARAM;
+    }
+
+    if(!GPIO_IsValidPort(config->port) || !GPIO_IsValidPin(config->pin)){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Check if alternate function is valid when in alternate mode */
+    if((config->mode == GPIO_MODE_ALT) && 
+        !GPIO_IsValidAlternate(config->alternate)){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Check if driver is initialized */
+    if(gpio_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Enable the GPIO port clock */
+    status = GPIO_EnableClock(config->port);
+    if(status != STATUS_OK){
+        return status;
+    }
+
+    /* Get the GPIO port register */
+    gpio_regs = GPIO_GetPortRegister(config->port);
+    if(gpio_regs == NULL){
+        return STATUS_ERROR_PARAM;
+    }
+}
