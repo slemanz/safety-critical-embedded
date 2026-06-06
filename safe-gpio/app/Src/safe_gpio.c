@@ -367,3 +367,24 @@ Status_t GPIO_TogglePin(GPIO_Port_t port, GPIO_Pin_t pin)
 
     return STATUS_OK;
 }
+
+Status_t GPIO_DeInit(void)
+{
+    uint32_t i = 0U;
+
+    /* Check if driver is deinitialized */
+    if(gpio_initialized == 0U){
+        return STATUS_OK; /* Already deinitialized, not an error */
+    }
+
+    /* Clear tracking arrays */
+    for(i = 0U; i < GPIO_PORT_COUNT; i++){
+        gpio_output_pins[i] = 0U;
+        gpio_initialized_pins[i] = 0U;
+    }
+
+    /* Mark driver as uninitialized */
+    gpio_initialized = 0U;
+
+    return STATUS_OK;
+}
