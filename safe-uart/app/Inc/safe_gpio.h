@@ -1,0 +1,209 @@
+/**
+ * @file safe_gpio.h
+ * @brief MISRA-compliant GPIO driver with strong type safety
+ * 
+ * This file provides a type-safe GPIO driver implementation that
+ * follows MISRA C guidelines for memory-safe register access.
+ * 
+ * Key safety features:
+ * - Strong typing for GPIO ports and pins
+ * - Compile-time pin configuration validation
+ * - Safe register access methods
+ * - Input validation for all functions
+ * 
+ * @version 1.0
+ */
+#ifndef INC_SAFE_GPIO_H
+#define INC_SAFE_GPIO_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include "safe_status.h"
+
+/**
+ * @brief GPIO port identifiers with strong typing
+ */
+typedef enum{
+    GPIO_PORT_A = 0U,
+    GPIO_PORT_B = 1U,
+    GPIO_PORT_C = 2U,
+    GPIO_PORT_D = 3U,
+    GPIO_PORT_E = 4U,
+    GPIO_PORT_RESERVERD1 = 5U,
+    GPIO_PORT_RESERVERD2 = 6U,
+    GPIO_PORT_H = 7U,
+    GPIO_PORT_COUNT
+}GPIO_Port_t;
+
+
+/**
+ * @brief GPIO pins identifiers with strong typing
+ */
+typedef enum{
+    GPIO_PIN_0 = 0U,
+    GPIO_PIN_1 = 1U,
+    GPIO_PIN_2 = 2U,
+    GPIO_PIN_3 = 3U,
+    GPIO_PIN_4 = 4U,
+    GPIO_PIN_5 = 5U,
+    GPIO_PIN_6 = 6U,
+    GPIO_PIN_7 = 7U,
+    GPIO_PIN_8 = 8U,
+    GPIO_PIN_9 = 9U,
+    GPIO_PIN_10 = 10U,
+    GPIO_PIN_11 = 11U,
+    GPIO_PIN_12 = 12U,
+    GPIO_PIN_13 = 13U,
+    GPIO_PIN_14 = 14U,
+    GPIO_PIN_15 = 15U,
+    GPIO_PIN_COUNT
+}GPIO_Pin_t;
+
+
+/**
+ * @brief GPIO pin mode options
+ */
+typedef enum{
+    GPIO_MODE_INPUT  = 0U,      /**< Input mode */
+    GPIO_MODE_OUTPUT = 1U,      /**< Output mode */
+    GPIO_MODE_ALT    = 2U,      /**< Alternate function mode */
+    GPIO_MODE_ANALOG = 3U       /**< Analog mode */
+}GPIO_Mode_t;
+
+
+/**
+ * @brief GPIO output type options
+ */
+typedef enum{
+    GPIO_OTYPE_PUSH_PULL = 0U,  /**< Push-pull output */
+    GPIO_OTYPE_OPEN_DRAIN = 1U, /**< Open-drain output */
+}GPIO_OutputType_t;
+
+
+/**
+ * @brief GPIO output speed options
+ */
+typedef enum{
+    GPIO_SPEED_LOW       = 0U,
+    GPIO_SPEED_MEDIUM    = 1U,
+    GPIO_SPEED_HIGH      = 2U,
+    GPIO_SPEED_VERY_HIGH = 3U
+}GPIO_Speed_t;
+
+
+/**
+ * @brief GPIO pull-up/pull-down register options
+ */
+typedef enum{
+    GPIO_PULL_NONE = 0U, /**< No pull-up or pull-down */
+    GPIO_PULL_UP   = 1U, /**< Pull-up */
+    GPIO_PULL_DOWN = 2U, /**< Pull-down */
+}GPIO_Pull_t;
+
+/**
+ * @brief GPIO pin configuration structure
+ * 
+ * This structure holds all configuration parameters for GPIO pin.
+ */
+typedef struct{
+    GPIO_Port_t     port;       /**< GPIO port */
+    GPIO_Pin_t      pin;        /**< GPIO pin */
+    GPIO_Mode_t     mode;       /**< Mode (input, output, alternate, analog) */
+    GPIO_OutputType_t otype;    /**< Output type (push-pull, open-drain) */
+    GPIO_Speed_t    speed;      /**< Output speed */
+    GPIO_Pull_t     pull;       /**< Pull-up/pull-down configuration */
+    uint8_t         alternate;  /**< Alternate function number (0-15) */
+}GPIO_Config_t;
+
+/**
+ * @brief GPIO pin state
+ */
+typedef enum{
+    GPIO_PIN_RESET = 0U,
+    GPIO_PIN_SET   = 1U
+}GPIO_PinState_t;
+
+/**
+ * @brief Initialize the GPIO driver subsystem
+ * 
+ * This function must be called before any other GPIO functions.
+ * 
+ * @return Status_t operation status
+ * @retval STATUS_OK Driver initialized succesfully
+ * @retval STATUS_ERROR_INIT Initizlization failed
+ */
+Status_t GPIO_Init(void);
+
+/**
+ * @brief Initialize a GPIO pin with the specified configuration
+ * 
+ * @param[in] config Pointer to the GPIO pin configuration
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin initialized succesfully
+ * @retval STATUS_ERROR_NULL Null pointer provided
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Driver not initialized
+ */
+Status_t GPIO_PinInit(const GPIO_Config_t* config);
+
+/**
+ * @brief Read the current state of GPIO pin
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @param[in] state The state to set (GPIO_PIN_SET or GPIO_PIN_RESET)
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin state set successfully
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Pin not initialized
+ */
+Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state);
+
+/**
+ * @brief Read the current state of GPIO pin
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @param[out] state Pointer to store the pin state
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin state read successfully
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Pin not initialized
+ * @retval STATUS_ERROR_NULL Null pointer provided
+ */
+Status_t GPIO_ReadPin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t* state);
+
+/**
+ * @brief Toggle the state of a GPIO pin
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @return Status_t Operation status
+ * @retval STATUS_OK Pin toggled successfully
+ * @retval STATUS_ERROR_PARAM Invalid parameter
+ * @retval STATUS_ERROR_INIT Pin not initialized as output
+ */
+Status_t GPIO_TogglePin(GPIO_Port_t port, GPIO_Pin_t pin);
+
+/**
+ * @brief Safely shutdown the GPIO Driver subsystem
+ * 
+ * @return Status_t Operation status
+ * @retval STATUS_OK Driver shutdown succesfully
+ */
+Status_t GPIO_DeInit(void);
+
+/**
+ * @brief Get GPIO driver version information
+ * 
+ * @param[out] major Pointer to store major version number
+ * @param[out] minor Pointer to store minor version number
+ * @param[out] patch Pointer to store patch version number
+ * @return Status_t Operation status
+ * @retval STATUS_OK Version information retrieved
+ * @retval STATUS_ERROR_NULL Null pointer provided
+ */
+Status_t GPIO_GetVersion(uint8_t* major, uint8_t* minor, uint8_t* patch);
+
+
+#endif /* INC_SAFE_GPIO_H */

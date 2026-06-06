@@ -53,12 +53,23 @@ back to a concept documented elsewhere in this project.
 ### Strong Typing
 
 Ports, pins, modes, output types, speeds, pull configurations, and pin states
-are all expressed as dedicated enumerations rather than as raw integers. A
-function that expects a port cannot silently accept an arbitrary number, and the
-compiler participates in catching misuse before the code is ever run. This is a
-direct application of the type-safety category of the MISRA C guidelines, where
-the goal is to make the intent of each value explicit and to prevent the silent
-conversions that hide defects.
+are all expressed as dedicated enumerations rather than as raw integers. The
+intent of every value is therefore explicit at the call site, and the named
+constants document themselves. This is a direct application of the type-safety
+category of the MISRA C guidelines, where the goal is to make intent visible and
+to prevent the silent conversions that hide defects.
+
+A word of caution, however, about what this buys you. In C an enumerated type is
+compatible with an integer type, so assigning a raw literal such as `3` to an
+enum-typed field (instead of, say, `GPIO_SPEED_VERY_HIGH`) is perfectly legal
+and the **compiler will not warn about it**, not even under `-Wall`. The C
+compiler is not the enforcement mechanism here. Catching that kind of misuse is
+the job of MISRA-aware static analysis (Rule 10.3 of the essential-type model
+prohibits assigning an `int` to an object of `enum` type), which is why the
+documentation under *Considerations* and *MISRA Essential* treats static
+analysis tooling as a mandatory complement to the compiler rather than an
+optional extra. Strong typing makes the intent expressible and machine-checkable;
+it does not, on its own, make the compiler reject every misuse.
 
 ### Input Validation
 
