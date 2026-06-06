@@ -388,3 +388,18 @@ Status_t GPIO_DeInit(void)
 
     return STATUS_OK;
 }
+
+Status_t GPIO_GetVersion(uint8_t* major, uint8_t* minor, uint8_t* patch)
+{
+    /* Validate output pointers */
+    if((major == NULL) || (minor == NULL) || (patch == NULL)){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Provide the driver version information */
+    *major = (uint8_t)GPIO_VERSION_MAJOR;
+    *minor = (uint8_t)GPIO_VERSION_MINOR;
+    *patch = (uint8_t)GPIO_VERSION_PATCH;
+
+    return STATUS_OK;
+}
