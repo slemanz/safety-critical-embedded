@@ -272,12 +272,12 @@ Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state)
 
     /* Validate inputs */
     if(!GPIO_IsValidPort(port) || !(GPIO_IsValidPin(pin))){
-        return STATUS_ERROR_INIT;
+        return STATUS_ERROR_PARAM;
     }
 
     /* Check if the pin is initialized as output */
     if((gpio_output_pins[port] & GPIO_PIN_MASK(pin)) == 0U){
-        return STATUS_ERROR_PARAM;
+        return STATUS_ERROR_INIT;
     }
 
     /* Get the GPIO port register */
@@ -293,6 +293,47 @@ Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state)
     if(state == GPIO_PIN_SET){
         gpio_regs->BSRR = pin_mask;
     }else{
-        gpio_regs->BSRR = (pin_mask << 16);
+        gpio_regs->BSRR = (pin_mask << 16U);
     }
+
+    return STATUS_OK;
+}
+
+Status_t GPIO_ReadPin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t* state)
+{
+    GPIO_TypeDef* gpio_regs;
+    uint32_t pin_mask;
+
+    /* Validate inputs */
+    if(!GPIO_IsValidPort(port) || !(GPIO_IsValidPin(pin))){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Validate output pointer */
+    if(state == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Check if the pin is initialized */
+    if((gpio_initialized_pins[port] & GPIO_PIN_MASK(pin)) == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Get the GPIO port register */
+    gpio_regs = GPIO_GetPortRegister(port);
+    if(gpio_regs == NULL){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Create pin mask */
+    pin_mask = GPIO_PIN_MASK(pin);
+
+    /* Read the pin state from the input data register */
+    if((gpio_regs->IDR & pin_mask) != 0U){
+        *state = GPIO_PIN_SET;
+    }else{
+        *state = GPIO_PIN_RESET;
+    }
+
+    return STATUS_OK;
 }
