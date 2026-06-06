@@ -264,3 +264,35 @@ Status_t GPIO_PinInit(const GPIO_Config_t* config)
 
     return STATUS_OK;
 }
+
+Status_t GPIO_WritePin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t state)
+{
+    GPIO_TypeDef* gpio_regs;
+    uint32_t pin_mask;
+
+    /* Validate inputs */
+    if(!GPIO_IsValidPort(port) || !(GPIO_IsValidPin(pin))){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Check if the pin is initialized as output */
+    if((gpio_output_pins[port] & GPIO_PIN_MASK(pin)) == 0U){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Get the GPIO port register */
+    gpio_regs = GPIO_GetPortRegister(port);
+    if(gpio_regs == NULL){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Create pin mask */
+    pin_mask = GPIO_PIN_MASK(pin);
+
+    /* Set or reset the pin based on requested state */
+    if(state == GPIO_PIN_SET){
+        gpio_regs->BSRR = pin_mask;
+    }else{
+        gpio_regs->BSRR = (pin_mask << 16);
+    }
+}
