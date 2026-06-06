@@ -15,11 +15,14 @@ CFLAGS = -c $(MCU) -std=gnu11 -DSTM32F411xE -Wall -O0 -g3 -ffunction-sections -f
 LDFLAGS = $(MCU) -Tdrivers/Device/STM32F411.ld --specs=nano.specs --specs=nosys.specs -Wl,--gc-sections
 
 INCLUDES =	-Idrivers/Device/cmsis \
-			-Idrivers/Inc
+			-Idrivers/Inc \
+			-Iapp/Inc
 
 OBJS += $(DIR_BUILD)/main.o
 OBJS += $(DIR_BUILD)/syscalls.o
 OBJS += $(DIR_BUILD)/startup.o
+
+OBJS += $(DIR_BUILD)/safe_gpio.o
 
 DRIVERS += $(DIR_BUILD)/fpu.o
 DRIVERS += $(DIR_BUILD)/uart.o
