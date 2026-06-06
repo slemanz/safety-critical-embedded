@@ -337,3 +337,33 @@ Status_t GPIO_ReadPin(GPIO_Port_t port, GPIO_Pin_t pin, GPIO_PinState_t* state)
 
     return STATUS_OK;
 }
+
+Status_t GPIO_TogglePin(GPIO_Port_t port, GPIO_Pin_t pin)
+{
+    GPIO_TypeDef* gpio_regs;
+    uint32_t pin_mask;
+
+    /* Validate inputs */
+    if(!GPIO_IsValidPort(port) || !(GPIO_IsValidPin(pin))){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Check if the pin is initialized as output */
+    if((gpio_output_pins[port] & GPIO_PIN_MASK(pin)) == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Get the GPIO port register */
+    gpio_regs = GPIO_GetPortRegister(port);
+    if(gpio_regs == NULL){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Create pin mask */
+    pin_mask = GPIO_PIN_MASK(pin);
+
+    /* Toggle the pin state in the output data register */
+    gpio_regs->ODR ^= pin_mask;
+
+    return STATUS_OK;
+}
