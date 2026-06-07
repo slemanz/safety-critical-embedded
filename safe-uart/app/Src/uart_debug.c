@@ -159,3 +159,36 @@ Status_t UART_Init(const UART_Config_t* config)
 
     return STATUS_OK;
 }
+
+Status_t UART_SendString(const char* str)
+{
+    uint32_t i;
+
+    /* Validate input */
+    if(str == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Check if UART is initialized */
+    if(uart_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Send each character in the string */
+    for(i = 0U; str[i] != '\0'; i++){
+        /* wait for transmit buffer to be empty */
+        while((USART2->SR & USART_SR_TXE) == 0U){
+            /* Do nothing */
+        }
+
+        /* Send the character */
+        USART2->DR = (uint32_t)(str[i] & 0xFFU);
+    }
+
+    /* Wait for transmission to complete */
+    while((USART2->SR & USART_SR_TC) == 0U){
+        /* Do nothing */
+    }
+
+    return STATUS_OK;
+}
