@@ -268,6 +268,7 @@ Status_t UART_GetChar(char* ch)
 Status_t UART_GetLine(char* buffer, uint32_t max_len)
 {
     char ch;
+    char echo[2];
     Status_t status;
 
     /* Validate input */
@@ -285,28 +286,16 @@ Status_t UART_GetLine(char* buffer, uint32_t max_len)
         return STATUS_ERROR_INIT;
     }
 
-    /* Check if a line is complete */
-    if(line_complete != 0U){
-        /* Copy the line to the provided buffer */
-        strncpy(buffer, line_buffer, max_len - 1U);
-        buffer[max_len - 1U] = '\0';
-
-        /* Reset the line buffer */
-        memset(line_buffer, 0, sizeof(line_buffer));
-        line_pos = 0U;
-        line_complete = 0U;
-
-        return STATUS_OK;
-    }
-
     /* Try to read a character */
     status = UART_GetChar(&ch);
     if(status != STATUS_OK){
         return status;
     }
 
-    /* Echo the character back */
-    UART_SendString(&ch);
+    /* Echo the character back (null-terminated single-char string) */
+    echo[0] = ch;
+    echo[1] = '\0';
+    UART_SendString(echo);
 
     /* Process the character */
     if(ch == '\r' || ch == '\n'){
@@ -339,4 +328,28 @@ Status_t UART_GetLine(char* buffer, uint32_t max_len)
     }
 
     return STATUS_PENDING;
+}
+
+Status_t UART_DeInit(void)
+{
+    /* Check if UART is initialized */
+    if(uart_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Disable USART2 transmitter, receiver and the peripheral itself */
+    USART2->CR1 &= ~(USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
+
+    /* Disable the USART2 peripheral clock */
+    RCC->APB1ENR &= ~RCC_APB1ENR_USART2EN;
+
+    /* Reset the line buffer state */
+    memset(line_buffer, 0, sizeof(line_buffer));
+    line_pos = 0U;
+    line_complete = 0U;
+
+    /* Mark as uninitialized */
+    uart_initialized = 0U;
+
+    return STATUS_OK;
 }
