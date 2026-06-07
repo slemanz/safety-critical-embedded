@@ -83,7 +83,8 @@ Status_t UART_Init(const UART_Config_t* config)
     /* Validate parameters */
     if((config->data_bits != 7U && config->data_bits != 8U) ||
        (config->stop_bits != 1U && config->stop_bits != 2U) ||
-       (config->parity > 2U)) {
+       (config->parity > 2U) ||
+       (config->baudrate == 0U)) {
             return STATUS_ERROR_PARAM;
        }
 
@@ -103,5 +104,58 @@ Status_t UART_Init(const UART_Config_t* config)
     }else{
         /* Enable parity control */
         parity_config = USART_CR1_PCE;
+
+        if(config->parity == 1U){
+            /* Odd parity */
+            parity_config |= USART_CR1_PS;
+        }
     }
+
+    /* Configure data bits */
+    if(config->data_bits == 8U){
+        if(config->parity == 0U){
+            /* 8 data bits, no parity */
+            word_length = 0U;
+        }else{
+            /* 8 data bits + parity = 9 bits */
+            word_length = USART_CR1_M;
+        }
+    }else{
+        /* 7 data bits */
+        if(config->parity == 0U){
+            /* 7 data bits, no parity */
+            word_length = 0U;
+        }else{
+            /* 7 data bits + parity = 8*/
+            word_length = 0U;
+        }
+    }
+
+    /* Configure stop bits */
+    if(config->stop_bits == 1U){
+        stop_bits_config = 0U;
+    }else{
+        stop_bits_config = USART_CR2_STOP_1;
+    }
+
+    /* Calculate baud rate divider (assumming 16 MHz PCLK1)*/
+    baud_div = (16000000U + (config->baudrate / 2U))/config->baudrate;
+
+    /* Configure USART2 */
+    USART2->CR1 = parity_config | word_length | USART_CR1_RE | USART_CR1_TE;
+    USART2->CR2 = stop_bits_config;
+    USART2->BRR = baud_div;
+
+    /* Enable USART2 */
+    USART2->CR1 |= USART_CR1_UE;
+
+    /* Initialize line buffer */
+    memset(line_buffer, 0, sizeof(line_buffer));
+    line_pos = 0;
+    line_complete = 0U;
+
+    /* Mark as initialized */
+    uart_initialized = 1U;
+
+    return STATUS_OK;
 }
