@@ -12,6 +12,7 @@
 #include "stm32f411xe.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 /* UART buffer size */
 #define UART_BUFFER_SIZE        (256U)
@@ -191,4 +192,37 @@ Status_t UART_SendString(const char* str)
     }
 
     return STATUS_OK;
+}
+
+Status_t UART_Printf(const char* format, ...)
+{
+    char buffer[UART_BUFFER_SIZE];
+    va_list args;
+    Status_t status;
+    int written;
+
+    /* Validate input */
+    if(format == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Check if UART is initialized */
+    if(uart_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Format the string */
+    va_start(args, format);
+    written = vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    /* Encoding error -> buffer content is indeterminate, do not transmit */
+    if(written < 0){
+        return STATUS_ERROR_GENERIC;
+    }
+
+    /* Send the formatted string */
+    status = UART_SendString(buffer);
+
+    return status;
 }

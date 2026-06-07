@@ -54,6 +54,7 @@ Status_t UART_SendString(const char* str);
  * @retval STATUS_OK String sent successfully
  * @retval STATUS_ERROR_NULL Null pointer provided
  * @retval STATUS_ERROR_INIT UART not initialized
+ * @retval STATUS_ERROR_GENERIC String formatting failed
  */
 Status_t UART_Printf(const char* format, ...);
 
