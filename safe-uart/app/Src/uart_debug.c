@@ -66,3 +66,42 @@ static Status_t UART_ConfigurePins(void)
 
     return STATUS_OK;
 }
+
+
+Status_t UART_Init(const UART_Config_t* config)
+{
+    uint32_t parity_config;
+    uint32_t stop_bits_config;
+    uint32_t word_length;
+    uint32_t baud_div;
+
+    /* Validate input */
+    if(config == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Validate parameters */
+    if((config->data_bits != 7U && config->data_bits != 8U) ||
+       (config->stop_bits != 1U && config->stop_bits != 2U) ||
+       (config->parity > 2U)) {
+            return STATUS_ERROR_PARAM;
+       }
+
+    /* Configure GPIO pins for UART */
+    UART_ConfigurePins();
+
+    /* Enable USART2 clock */
+    RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+
+    /* Disable USART2 before configuration */
+    USART2->CR1 &= ~USART_CR1_UE;
+
+    /* Configure parity */
+    if(config->parity == 0U){
+        /* No parity */
+        parity_config = 0U;
+    }else{
+        /* Enable parity control */
+        parity_config = USART_CR1_PCE;
+    }
+}
