@@ -264,3 +264,79 @@ Status_t UART_GetChar(char* ch)
 
     return STATUS_OK;
 }
+
+Status_t UART_GetLine(char* buffer, uint32_t max_len)
+{
+    char ch;
+    Status_t status;
+
+    /* Validate input */
+    if(buffer == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Validate parameters */
+    if(max_len == 0U){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Check if UART is initialized */
+    if(uart_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Check if a line is complete */
+    if(line_complete != 0U){
+        /* Copy the line to the provided buffer */
+        strncpy(buffer, line_buffer, max_len - 1U);
+        buffer[max_len - 1U] = '\0';
+
+        /* Reset the line buffer */
+        memset(line_buffer, 0, sizeof(line_buffer));
+        line_pos = 0U;
+        line_complete = 0U;
+
+        return STATUS_OK;
+    }
+
+    /* Try to read a character */
+    status = UART_GetChar(&ch);
+    if(status != STATUS_OK){
+        return status;
+    }
+
+    /* Echo the character back */
+    UART_SendString(&ch);
+
+    /* Process the character */
+    if(ch == '\r' || ch == '\n'){
+        /* End of line */
+        UART_SendString("\r\n");
+        line_buffer[line_pos] = '\0';
+        line_complete = 1U;
+
+        /* Copy the line to the provided buffer */
+        strncpy(buffer, line_buffer, max_len - 1U);
+        buffer[max_len - 1U] = '\0';
+
+        /* Reset the line buffer */
+        memset(line_buffer, 0, sizeof(line_buffer));
+        line_pos = 0U;
+        line_complete = 0U;
+
+        return STATUS_OK;
+    }else if(ch == '\b' || ch == 127){
+        /* Backspace */
+        if(line_pos > 0U){
+            line_pos--;
+            line_buffer[line_pos] = '\0';
+            UART_SendString("\b \b");
+        }
+    }else if(line_pos < (sizeof(line_buffer) - 1U)){
+        /* Add the character to the line buffer */
+        line_buffer[line_pos] = ch;
+        line_pos++;
+    }
+
+    return STATUS_PENDING;
+}
