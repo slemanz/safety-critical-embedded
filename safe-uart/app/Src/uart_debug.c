@@ -241,3 +241,26 @@ uint8_t UART_IsCharAvailable(void)
         return 0U;
     }
 }
+
+Status_t UART_GetChar(char* ch)
+{
+    /* Validate input */
+    if(ch == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Check if UART is initialized */
+    if(uart_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* check if data is available */
+    if(UART_IsCharAvailable() == 0U){
+        return STATUS_PENDING;
+    }
+
+    /* Read the received character (clears RXNE) */
+    *ch = (char)(USART2->DR & 0xFFU);
+
+    return STATUS_OK;
+}
