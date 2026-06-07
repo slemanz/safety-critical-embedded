@@ -226,3 +226,18 @@ Status_t UART_Printf(const char* format, ...)
 
     return status;
 }
+
+uint8_t UART_IsCharAvailable(void)
+{
+    /* Check if UART is initialized */
+    if(uart_initialized == 0U){
+        return 0U;
+    }
+
+    /* Check if receive data buffer is not empty */
+    if((USART2->SR & USART_SR_RXNE) != 0U){
+        return 1U;
+    }else{
+        return 0U;
+    }
+}
