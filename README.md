@@ -68,3 +68,5 @@ verification, and strict adherence to industry-specific standards and guidelines
 - MISRA Fundamentals
 - MISRA Essential
 - Safe GPIO
+- Safe UART
+- Demo Interface
