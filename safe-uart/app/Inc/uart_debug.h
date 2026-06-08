@@ -73,7 +73,7 @@ uint8_t UART_IsCharAvailable(void);
  * @retval STATUS_OK Character read succesfully
  * @retval STATUS_ERROR_NULL Null pointer provided
  * @retval STATUS_ERROR_INIT UART not initialized
- * @retval STATUS_ERROR_PENDING No character available
+ * @retval STATUS_PENDING No character available
  */
 Status_t UART_GetChar(char* ch);
 
@@ -87,7 +87,7 @@ Status_t UART_GetChar(char* ch);
  * @retval STATUS_ERROR_NULL Null pointer provided
  * @retval STATUS_ERROR_PARAM Invalid parameter
  * @retval STATUS_ERROR_INIT UART not initialized
- * @retval STATUS_ERROR_PENDING Line reading in progress
+ * @retval STATUS_PENDING Line reading in progress
  */
 Status_t UART_GetLine(char* buffer, uint32_t max_len);
 

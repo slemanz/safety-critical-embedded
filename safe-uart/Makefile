@@ -23,6 +23,7 @@ OBJS += $(DIR_BUILD)/syscalls.o
 OBJS += $(DIR_BUILD)/startup.o
 
 OBJS += $(DIR_BUILD)/safe_gpio.o
+OBJS += $(DIR_BUILD)/uart_debug.o
 
 DRIVERS += $(DIR_BUILD)/fpu.o
 DRIVERS += $(DIR_BUILD)/uart.o
