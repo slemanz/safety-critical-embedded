@@ -25,3 +25,29 @@ typedef enum{
 }Demo_State_t;
 
 static Demo_State_t demo_state = DEMO_STATE_WAITING_FOR_COMMAND;
+
+typedef struct{
+    uint8_t configured;
+    GPIO_Port_t port;
+    GPIO_Pin_t pin;
+    GPIO_Mode_t mode;
+}Demo_PinConfig_t;
+
+static Demo_PinConfig_t configured_pins[MAX_DEMO_PINS];
+
+/**
+ * @brief Find a free slot for pin configuration
+ * 
+ * @return int8_t Index of the free slot, or -1 if no free slot
+ */
+static int8_t FindFreePinSlot(void){
+    uint8_t i;
+
+    for(i = 0U; i < MAX_DEMO_PINS; i++){
+        if(configured_pins[i].configured == 0U){
+            return (int8_t)i;
+        }
+    }
+
+    return -1;
+}
