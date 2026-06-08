@@ -51,3 +51,74 @@ static int8_t FindFreePinSlot(void){
 
     return -1;
 }
+
+/**
+ * @brief Find a configured pin by port and pin number
+ * 
+ * @param[in] port GPIO port
+ * @param[in] pin GPIO pin
+ * @return int8_t Index of the configured pin, or -1 if not found
+ */
+static int8_t FindConfiguredPin(GPIO_Port_t port, GPIO_Pin_t pin)
+{
+    uint8_t i;
+
+    for(i = 0U; i < MAX_DEMO_PINS; i++){
+        if((configured_pins[i].configured != 0U) &&
+           (configured_pins[i].port == port) &&
+           (configured_pins[i].pin == pin)){
+            return (int8_t)i;
+        }
+    }
+
+    return -1;
+}
+
+/**
+ * @brief Convert a port string to a GPIO_Port_t
+ * 
+ * @param[in] port_str Port string (e.g. "A", "B", "C")
+ * @param[out] port Pointer to store the port
+ * @return Status_t Operation status
+ */
+static Status_t ParsePort(const char* port_str, GPIO_Port_t* port)
+{
+    if((port_str == NULL) || (port == NULL)){
+        return STATUS_ERROR_NULL;
+    }
+
+    if(strlen(port_str) != 1U){
+        return STATUS_ERROR_PARAM;
+    }
+
+    switch(port_str[0]){
+        case 'A':
+        case 'a':
+            *port = GPIO_PORT_A;
+            break;
+        case 'B':
+        case 'b':
+            *port = GPIO_PORT_B;
+            break;
+        case 'C':
+        case 'c':
+            *port = GPIO_PORT_C;
+            break;
+        case 'D':
+        case 'd':
+            *port = GPIO_PORT_D;
+            break;
+        case 'E':
+        case 'e':
+            *port = GPIO_PORT_E;
+            break;
+        case 'H':
+        case 'h':
+            *port = GPIO_PORT_H;
+            break;
+        default:
+            return STATUS_ERROR_PARAM;
+    }
+
+    return STATUS_OK;
+}
