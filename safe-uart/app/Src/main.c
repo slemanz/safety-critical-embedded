@@ -1,81 +1,55 @@
 /**
  * @file main.c
- * @brief Reference application demonstrating professional use of the safe_gpio driver
+ * @brief Reference application demonstrating professional use of the uart_debug module
  *
- * This example shows the intended usage pattern of the safe_gpio module in a
+ * This example shows the intended usage pattern of the uart_debug module in a
  * safety-aware style, consistent with the practices documented in this repository
- * (MISRA C alignment, fault tolerance and fail-safe behaviour, traceable mapping
- * between requirements and code):
+ * (MISRA C alignment, fault tolerance and fail-safe behaviour, explicit status
+ * handling on every call):
  *
- *  - Centralised, status-checked initialisation of every GPIO resource.
- *  - A fail-safe error handler that drives the system into a known safe state
- *    when any GPIO operation reports an error (see "considerations" / "keys").
- *  - Deterministic, tick-based periodic execution (no busy-wait, bounded loop).
- *  - Strongly-typed, validated GPIO read/write operations with explicit status
- *    handling on every call.
+ *  - Status-checked initialisation of the console; the system never proceeds
+ *    without a working UART.
+ *  - A fail-safe handler that releases the peripheral and halts deterministically
+ *    when the console reports an unrecoverable error.
+ *  - A non-blocking main loop: line assembly returns STATUS_PENDING until a full
+ *    line is available, leaving room for other periodic work.
+ *  - Output produced exclusively through the module's own UART_Printf /
+ *    UART_SendString (no reliance on the C library's printf, see README).
+ *
+ * Behaviour: the application prints a banner and then acts as a tiny line-based
+ * console. Each line typed by the user is read with UART_GetLine (which echoes
+ * the input as it is typed) and answered with a one-line response.
  *
  * Hardware mapping (traceability):
- *  - PC13 : status LED       - output, blinks at LED_BLINK_PERIOD_TICKS (the "blink").
- *  - PA0  : user button      - input with pull-up, active-low.
- *  - PB3  : actuator output  - driven active while the button is pressed.
- *
- * Timebase note: one tick equals one second (SysTick reload = core clock).
+ *  - PA2 : USART2_TX - serial console transmit.
+ *  - PA3 : USART2_RX - serial console receive.
+ *  Console settings: 115200 baud, 8 data bits, no parity, 1 stop bit (8N1).
  */
 
 #include <stdint.h>
-#include <stdio.h>
+#include <string.h>
 #include "fpu.h"
-#include "uart.h"
-#include "timebase.h"
-#include "safe_gpio.h"
+#include "uart_debug.h"
 
 /* -------------------------------------------------------------------------- */
 /* Application configuration                                                   */
 /* -------------------------------------------------------------------------- */
 
-/* Pin mapping - kept as named constants to preserve traceability */
-#define LED_PORT                (GPIO_PORT_C)
-#define LED_PIN                 (GPIO_PIN_13)
-#define BUTTON_PORT             (GPIO_PORT_A)
-#define BUTTON_PIN              (GPIO_PIN_0)
-#define ACTUATOR_PORT           (GPIO_PORT_B)
-#define ACTUATOR_PIN            (GPIO_PIN_3)
+/* Console line settings, kept as named constants for traceability */
+#define CONSOLE_BAUDRATE        (115200U)
+#define CONSOLE_DATA_BITS       (8U)
+#define CONSOLE_STOP_BITS       (1U)
+#define CONSOLE_PARITY          (0U)    /* 0 = none */
 
-/* Periodic task intervals, expressed in timebase ticks (1 tick = 1 s) */
-#define LED_BLINK_PERIOD_TICKS  (1U)
+/* Caller-side line buffer. Bounded at compile time - no dynamic memory. */
+#define LINE_MAX_LEN            (64U)
 
-/* -------------------------------------------------------------------------- */
-/* Static pin configurations (statically allocated - no dynamic memory)        */
-/* -------------------------------------------------------------------------- */
-
-static const GPIO_Config_t led_config = {
-    .port      = LED_PORT,
-    .pin       = LED_PIN,
-    .mode      = GPIO_MODE_OUTPUT,
-    .otype     = GPIO_OTYPE_PUSH_PULL,
-    .speed     = GPIO_SPEED_LOW,
-    .pull      = GPIO_PULL_NONE,
-    .alternate = 0U
-};
-
-static const GPIO_Config_t button_config = {
-    .port      = BUTTON_PORT,
-    .pin       = BUTTON_PIN,
-    .mode      = GPIO_MODE_INPUT,
-    .otype     = GPIO_OTYPE_PUSH_PULL,
-    .speed     = GPIO_SPEED_LOW,
-    .pull      = GPIO_PULL_UP,
-    .alternate = 0U
-};
-
-static const GPIO_Config_t actuator_config = {
-    .port      = ACTUATOR_PORT,
-    .pin       = ACTUATOR_PIN,
-    .mode      = GPIO_MODE_OUTPUT,
-    .otype     = GPIO_OTYPE_PUSH_PULL,
-    .speed     = GPIO_SPEED_LOW,
-    .pull      = GPIO_PULL_NONE,
-    .alternate = 0U
+/* Static console configuration (statically allocated - no dynamic memory) */
+static const UART_Config_t console_config = {
+    .baudrate  = CONSOLE_BAUDRATE,
+    .data_bits = CONSOLE_DATA_BITS,
+    .stop_bits = CONSOLE_STOP_BITS,
+    .parity    = CONSOLE_PARITY
 };
 
 /* -------------------------------------------------------------------------- */
@@ -86,18 +60,15 @@ static const GPIO_Config_t actuator_config = {
  * @brief Drive the system into a controlled safe state after a fatal fault
  *
  * Implements the fail-safe principle from the documentation: on an
- * unrecoverable fault the application reports the cause, releases the GPIO
- * outputs to their reset state, and halts deterministically. In a production
- * system a watchdog would subsequently force a recovery reset.
- *
- * @param[in] reason Human-readable description of the originating fault
+ * unrecoverable console fault the application releases the peripheral and halts
+ * deterministically. In a production system a watchdog would subsequently force
+ * a recovery reset. No message is printed here on purpose - the very channel we
+ * would use to report the fault is the one that failed.
  */
-static void app_safe_state(const char* reason)
+static void app_safe_state(void)
 {
-    printf("FATAL: %s -- entering safe state\r\n", reason);
-
-    /* Best-effort release of all GPIO outputs to their reset state */
-    (void)GPIO_DeInit();
+    /* Best-effort release of the UART peripheral */
+    (void)UART_DeInit();
 
     /* Controlled halt; awaiting watchdog / operator intervention */
     for(;;)
@@ -107,41 +78,28 @@ static void app_safe_state(const char* reason)
 }
 
 /* -------------------------------------------------------------------------- */
-/* GPIO bring-up                                                               */
+/* Command handling                                                            */
 /* -------------------------------------------------------------------------- */
 
 /**
- * @brief Initialise the GPIO driver and every pin used by the application
+ * @brief Produce a one-line response for a completed input line
  *
- * Every call is status-checked; any failure is escalated to the fail-safe
- * handler so the system never runs with a partially configured I/O set.
+ * @param[in] line Null-terminated line received from the console
  */
-static void app_gpio_init(void)
+static void app_handle_line(const char* line)
 {
-    if(GPIO_Init() != STATUS_OK)
+    if(strcmp(line, "help") == 0)
     {
-        app_safe_state("GPIO_Init");
+        (void)UART_SendString("commands: help, ping\r\n");
     }
-
-    if(GPIO_PinInit(&led_config) != STATUS_OK)
+    else if(strcmp(line, "ping") == 0)
     {
-        app_safe_state("LED pin init");
+        (void)UART_SendString("pong\r\n");
     }
-
-    if(GPIO_PinInit(&button_config) != STATUS_OK)
+    else
     {
-        app_safe_state("Button pin init");
-    }
-
-    if(GPIO_PinInit(&actuator_config) != STATUS_OK)
-    {
-        app_safe_state("Actuator pin init");
-    }
-
-    /* Define the initial output state explicitly (no implicit start-up state) */
-    if(GPIO_WritePin(ACTUATOR_PORT, ACTUATOR_PIN, GPIO_PIN_RESET) != STATUS_OK)
-    {
-        app_safe_state("Actuator initial state");
+        /* UART_Printf demonstrates safe, bounded, status-returning formatting */
+        (void)UART_Printf("echo: %s\r\n", line);
     }
 }
 
@@ -151,67 +109,43 @@ static void app_gpio_init(void)
 
 int main(void)
 {
-    uint8_t v_major = 0U;
-    uint8_t v_minor = 0U;
-    uint8_t v_patch = 0U;
-    uint32_t last_blink_tick;
+    char line[LINE_MAX_LEN];
+    Status_t status;
 
     fpu_enable();
-    debug_uart_init();
-    timebase_init();
 
-    app_gpio_init();
-
-    if(GPIO_GetVersion(&v_major, &v_minor, &v_patch) == STATUS_OK)
+    /* Bring up the console. Without it there is nothing to demonstrate and no
+     * channel to report on, so a failure goes straight to the safe state. */
+    if(UART_Init(&console_config) != STATUS_OK)
     {
-        printf("safe_gpio driver v%u.%u.%u ready\r\n",
-               (unsigned int)v_major, (unsigned int)v_minor, (unsigned int)v_patch);
+        app_safe_state();
     }
 
-    printf("Hello world!\r\n");
-    printf("Debug is on!\r\n");
+    (void)UART_SendString("\r\nsafe-uart demo ready\r\n");
+    (void)UART_SendString("type 'help' and press enter\r\n> ");
 
-    last_blink_tick = tick_get();
-
-    while(1)
+    for(;;)
     {
-        uint32_t now = tick_get();
+        /* Non-blocking: returns STATUS_PENDING until a full line is assembled */
+        status = UART_GetLine(line, sizeof(line));
 
-        /* Periodic status LED blink (the "blink") */
-        if((now - last_blink_tick) >= LED_BLINK_PERIOD_TICKS)
+        if(status == STATUS_OK)
         {
-            last_blink_tick = now;
-
-            if(GPIO_TogglePin(LED_PORT, LED_PIN) != STATUS_OK)
+            /* Ignore empty lines (e.g. the LF of a CR/LF terminal sequence) */
+            if(line[0] != '\0')
             {
-                app_safe_state("LED toggle");
+                app_handle_line(line);
+                (void)UART_SendString("> ");
             }
         }
-
-        /* Drive the actuator (PB3) from the button state.
-         * The button is active-low, so a pressed button reads GPIO_PIN_RESET. */
+        else if(status == STATUS_PENDING)
         {
-            GPIO_PinState_t button_state = GPIO_PIN_SET;
-
-            if(GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN, &button_state) != STATUS_OK)
-            {
-                app_safe_state("Button read");
-            }
-
-            if(button_state == GPIO_PIN_RESET)
-            {
-                if(GPIO_WritePin(ACTUATOR_PORT, ACTUATOR_PIN, GPIO_PIN_SET) != STATUS_OK)
-                {
-                    app_safe_state("Actuator set");
-                }
-            }
-            else
-            {
-                if(GPIO_WritePin(ACTUATOR_PORT, ACTUATOR_PIN, GPIO_PIN_RESET) != STATUS_OK)
-                {
-                    app_safe_state("Actuator reset");
-                }
-            }
+            /* No complete line yet; other periodic work could run here. */
+        }
+        else
+        {
+            /* Any other status from the console is unexpected and fatal. */
+            app_safe_state();
         }
     }
 }
