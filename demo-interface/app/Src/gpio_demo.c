@@ -218,3 +218,60 @@ static Status_t ParseState(const char* state_str, GPIO_PinState_t* state)
 
     return STATUS_OK;
 }
+
+/**
+ * @brief Parse a command string into tokens
+ * 
+ * @param[in] command Command string to parse
+ * @param[out] tokens Array to store tokens
+ * @param[in] max_tokens Maximum number of tokens to parse
+ * @return uint32_t Number of tokens parsed
+ */
+static uint32_t ParseCommandTokens(const char* command, char tokens[][GPIO_DEMO_MAX_LINE], uint32_t max_tokens)
+{
+    uint32_t token_count = 0U;
+    uint32_t i = 0U;
+    uint32_t token_start = 0U;
+    uint32_t token_length = 0U;
+    uint32_t command_length;
+
+    if((command == NULL) || (tokens == NULL) || (max_tokens == 0U)){
+        return 0U;
+    }
+
+    command_length = strlen(command);
+
+    while((i < command_length) && (token_count < max_tokens)){
+        /* Skip leading whitespace */
+        while((i < command_length) && ((command[i] == ' ') || (command[i] == '\t'))){
+            i++;
+        }
+
+        if(i >= command_length){
+            break;
+        }
+
+        /* Mark start of token */        
+        token_start = i;
+        token_length = 0U;
+
+        /* Find end of token */
+        while((i < command_length) && (command[i] != ' ') && (command[i] != '\t')){
+            i++;
+            token_length++;
+        }
+
+        /* Copy token */
+        if(token_length > 0U){
+            if(token_length >= GPIO_DEMO_MAX_LINE){
+                token_length = GPIO_DEMO_MAX_LINE - 1U;
+            }
+
+            strncpy(tokens[token_count], &command[token_start], token_length);
+            tokens[token_count][token_length] = '\0';
+            token_count++;
+        }
+    }
+
+    return token_count;
+}
