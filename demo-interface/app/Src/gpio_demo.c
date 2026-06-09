@@ -9,6 +9,7 @@
  */
 #include "gpio_demo.h"
 #include "safe_gpio.h"
+#include "uart_debug.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -274,4 +275,86 @@ static uint32_t ParseCommandTokens(const char* command, char tokens[][GPIO_DEMO_
     }
 
     return token_count;
+}
+
+/**
+ * @brief Handle the init command
+ * 
+ * @param[in] token_count Number of tokens
+ * @param[in] tokens Array of tokens
+ * @return Status_t Operation status
+ */
+static Status_t HandleInitCommand(uint32_t token_count, char tokens[][GPIO_DEMO_MAX_LINE])
+{
+    GPIO_Port_t port;
+    GPIO_Pin_t pin;
+    GPIO_Mode_t mode;
+    GPIO_Config_t config;
+    Status_t status;
+    int32_t slot;
+
+    /* Check token count */
+    if(token_count != 4U){
+        UART_Printf("Error: init command requires 3 parameters (port, pin, mode)\r\n");
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Parse parameters */
+    status = ParsePort(tokens[1], &port);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid port '%s'\r\n", tokens[1]);
+        return status;
+    }
+
+    status = ParsePin(tokens[2], &pin);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid pin '%s'\r\n", tokens[2]);
+        return status;
+    }
+
+    status = ParseMode(tokens[3], &mode);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid mode '%s'\r\n", tokens[3]);
+        return status;
+    }
+
+    /* Check if pin is already configured */
+    if(FindConfiguredPin(port, pin) >= 0){
+        UART_Printf("Error: pin P%c%d is already configured\r\n", 'A' + port, pin);
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Find a free slot for the new pin */
+    slot = FindFreePinSlot();
+    if(slot < 0){
+        UART_Printf("Error: maximum number of pins (%d) already configured\r\n", MAX_DEMO_PINS);
+        return STATUS_ERROR_RESOURCE;
+    }
+
+    /* Configure the pin */
+    memset(&config, 0, sizeof(config));
+    config.port = port;
+    config.pin = pin;
+    config.mode = mode;
+    config.pull = GPIO_PULL_NONE;
+
+    if(mode == GPIO_MODE_OUTPUT){
+        config.otype = GPIO_OTYPE_PUSH_PULL;
+        config.speed = GPIO_SPEED_MEDIUM;
+    }
+
+    status = GPIO_PinInit(&config);
+    if(status != STATUS_OK){
+        UART_Printf("Error: failed to initialize pin P%c%d (error %d)\r\n", 'A' + port, pin, status);
+        return status;
+    }
+
+    /* Store the configuration */
+    configured_pins[slot].configured = 1U;
+    configured_pins[slot].port = port;
+    configured_pins[slot].pin = pin;
+    configured_pins[slot].mode = mode;
+
+    UART_Printf("Pin P%c%d initialized as %s\r\n", 'A' + port, pin, tokens[3]);
+    return STATUS_OK;
 }
