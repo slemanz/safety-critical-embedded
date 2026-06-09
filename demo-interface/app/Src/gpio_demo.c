@@ -358,3 +358,68 @@ static Status_t HandleInitCommand(uint32_t token_count, char tokens[][GPIO_DEMO_
     UART_Printf("Pin P%c%d initialized as %s\r\n", 'A' + port, pin, tokens[3]);
     return STATUS_OK;
 }
+
+/**
+ * @brief Handle the write command
+ * 
+ * @param[in] token_count Number of tokens
+ * @param[in] tokens Array of tokens
+ * @return Status_t Operation status
+ */
+static Status_t HandleWriteCommand(uint32_t token_count, char tokens[][GPIO_DEMO_MAX_LINE])
+{
+    GPIO_Port_t port;
+    GPIO_Pin_t pin;
+    GPIO_PinState_t state;
+    Status_t status;
+    int32_t slot;
+
+    /* Check tokeen count */
+    if(token_count != 4U){
+        UART_Printf("Error: write command requires 3 parameters (port, pin, state)\r\n");
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Parse parameters */
+    status = ParsePort(tokens[1], &port);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid port '%s'\r\n", tokens[1]);
+        return status;
+    }
+
+    status = ParsePin(tokens[2], &pin);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid pin '%s'\r\n", tokens[2]);
+        return status;
+    }
+
+    status = ParseState(tokens[3], &state);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid state '%s'\r\n", tokens[3]);
+        return status;
+    }
+
+    /* Check if pin is configured */
+    slot = FindConfiguredPin(port, pin);
+    if(slot < 0){
+        UART_Printf("Error: pin P%c%d is not configured\r\n", 'A' + port, pin);
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Check if pin is configured as output */
+    if(configured_pins[slot].mode != GPIO_MODE_OUTPUT){
+        UART_Printf("Error: pin P%c%d is not configured as output\r\n", 'A' + port, pin);
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Write the pin state */
+    status = GPIO_WritePin(port, pin, state);
+    if(status != STATUS_OK){
+        UART_Printf("Error: failed to write pin P%c%d (error %d)\r\n", 'A' + port, pin, status);
+        return status;
+    }
+
+    UART_Printf("Pin P%c%d set to %s\r\n", 'A' + port, pin, (state == GPIO_PIN_SET) ? "high" : "low");
+
+    return STATUS_OK;
+}
