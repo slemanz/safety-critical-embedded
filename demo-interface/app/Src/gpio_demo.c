@@ -142,8 +142,8 @@ static Status_t ParsePin(const char* pin_str, GPIO_Pin_t* pin)
     /* Convert string to long */
     pin_val = strtol(pin_str, &end_ptr, 10);
 
-    /* Check for conversion errors */
-    if(*end_ptr != '\0'){
+    /* Check for conversion errors (no digits consumed or trailing chars) */
+    if((end_ptr == pin_str) || (*end_ptr != '\0')){
         return STATUS_ERROR_PARAM;
     }
 
@@ -153,6 +153,68 @@ static Status_t ParsePin(const char* pin_str, GPIO_Pin_t* pin)
     }
 
     *pin = (GPIO_Pin_t)pin_val;
+
+    return STATUS_OK;
+}
+
+/**
+ * @brief Convert a pin mode string to a GPIO_Mode_t
+ * 
+ * @param[in] mode_str Mode string (e.g., "input", "output")
+ * @param[out] mode Pointer to store the mode
+ * @return Status_t Operation status
+ */
+static Status_t ParseMode(const char* mode_str, GPIO_Mode_t* mode)
+{
+    if((mode_str == NULL) || (mode == NULL)){
+        return STATUS_ERROR_NULL;
+    }
+
+    if(strcmp(mode_str, "input") == 0){
+        *mode = GPIO_MODE_INPUT;
+    }
+    else if(strcmp(mode_str, "output") == 0){
+        *mode = GPIO_MODE_OUTPUT;
+    }
+    else if(strcmp(mode_str, "alternate") == 0){
+        *mode = GPIO_MODE_ALT;
+    }
+    else if(strcmp(mode_str, "analog") == 0){
+        *mode = GPIO_MODE_ANALOG;
+    }
+    else{
+        return STATUS_ERROR_PARAM;
+    }
+
+    return STATUS_OK;
+}
+
+/**
+ * @brief Convert a pin state string to a GPIO_PinState_t
+ *
+ * @param[in] state_str State string ("1"/"high"/"on" or "0"/"low"/"off")
+ * @param[out] state Pointer to store the state
+ * @return Status_t Operation status
+ */
+static Status_t ParseState(const char* state_str, GPIO_PinState_t* state)
+{
+    if((state_str == NULL) || (state == NULL)){
+        return STATUS_ERROR_NULL;
+    }
+
+    if((strcmp(state_str, "1") == 0) ||
+       (strcmp(state_str, "high") == 0) ||
+       (strcmp(state_str, "on") == 0)){
+        *state = GPIO_PIN_SET;
+    }
+    else if((strcmp(state_str, "0") == 0) ||
+            (strcmp(state_str, "low") == 0) ||
+            (strcmp(state_str, "off") == 0)){
+        *state = GPIO_PIN_RESET;
+    }
+    else{
+        return STATUS_ERROR_PARAM;
+    }
 
     return STATUS_OK;
 }
