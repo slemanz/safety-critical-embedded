@@ -122,3 +122,37 @@ static Status_t ParsePort(const char* port_str, GPIO_Port_t* port)
 
     return STATUS_OK;
 }
+
+/**
+ * @brief Convert a pin string to a GPIO_Pin_t
+ * 
+ * @param[in] pin_str Pin string (e.g., "0", "1", "15")
+ * @param[out] pin Pointer to store the pin
+ * @return Status_t Operation status
+ */
+static Status_t ParsePin(const char* pin_str, GPIO_Pin_t* pin)
+{
+    long pin_val;
+    char* end_ptr;
+
+    if((pin_str == NULL) || (pin == NULL)){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Convert string to long */
+    pin_val = strtol(pin_str, &end_ptr, 10);
+
+    /* Check for conversion errors */
+    if(*end_ptr != '\0'){
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Check if pin is in valid range */
+    if((pin_val < 0) || (pin_val >= GPIO_PIN_COUNT)){
+        return STATUS_ERROR_PARAM;
+    }
+
+    *pin = (GPIO_Pin_t)pin_val;
+
+    return STATUS_OK;
+}
