@@ -584,3 +584,52 @@ static Status_t HandleListCommand(void)
 
     return STATUS_OK;
 }
+
+
+/**
+ * @brief Handle the deinit command
+ * 
+ * @param[in] token_count Number of tokens
+ * @param[in] tokens Array of tokens
+ * @return Status_t Operation status
+ */
+static Status_t HandleDeinitCommand(uint32_t token_count, char tokens[][GPIO_DEMO_MAX_LINE])
+{
+    GPIO_Port_t port;
+    GPIO_Pin_t pin;
+    Status_t status;
+    int32_t slot;
+
+    /* Check token count */
+    if(token_count != 3U){
+        UART_Printf("Error: deinit command requires 2 parameters (port, pin)\r\n");
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Parse parameters */
+    status = ParsePort(tokens[1], &port);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid port '%s'\r\n", tokens[1]);
+        return status;
+    }
+
+    status = ParsePin(tokens[2], &pin);
+    if(status != STATUS_OK){
+        UART_Printf("Error: invalid pin '%s'\r\n", tokens[2]);
+        return status;
+    }
+
+    /* Check if pin is configured */
+    slot = FindConfiguredPin(port, pin);
+    if(slot < 0){
+        UART_Printf("Error: pin P%c%d is not configured\r\n", 'A' + port, pin);
+        return STATUS_ERROR_PARAM;
+    }
+
+    /* Release the configuration tracking slot */
+    configured_pins[slot].configured = 0U;
+
+    UART_Printf("Pin P%c%d deinitialized\r\n", 'A' + port, pin);
+
+    return STATUS_OK;
+}
