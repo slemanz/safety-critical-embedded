@@ -2,6 +2,7 @@ CC = arm-none-eabi-gcc
 LD = arm-none-eabi-gcc
 SIZE = arm-none-eabi-size
 OBJCOPY = arm-none-eabi-objcopy
+READELF = arm-none-eabi-readelf
 
 JLINK = jlink
 
@@ -24,6 +25,7 @@ OBJS += $(DIR_BUILD)/startup.o
 
 OBJS += $(DIR_BUILD)/safe_gpio.o
 OBJS += $(DIR_BUILD)/uart_debug.o
+OBJS += $(DIR_BUILD)/gpio_demo.o
 
 DRIVERS += $(DIR_BUILD)/fpu.o
 DRIVERS += $(DIR_BUILD)/uart.o
@@ -52,10 +54,16 @@ $(DIR_BUILD)/$(TARGET).elf: $(OBJS) $(DRIVERS)
 	$(OBJCOPY) -O binary $(DIR_BUILD)/$(TARGET).elf $(DIR_BUILD)/$(TARGET).bin
 	$(SIZE) $(DIR_BUILD)/$(TARGET).elf
 
+size:
+	$(SIZE) $(DIR_BUILD)/$(TARGET).elf
+
+symbols:
+	@$(READELF) -s $(DIR_BUILD)/$(TARGET).elf | sort -n -k3
+
 flash:
 	@$(JLINK) -CommanderScript flash.jlink >/dev/null 2>&1 && echo "Flash Finished"
 
 clean:
 	$(RM) $(DIR_BUILD)
 
-.PHONY: clean flash
+.PHONY: clean flash size symbols
