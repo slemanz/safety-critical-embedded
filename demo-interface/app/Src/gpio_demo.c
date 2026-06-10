@@ -789,3 +789,41 @@ Status_t GPIO_Demo_ProccessCommand(const char* command)
 
     return status;
 }
+
+Status_t GPIO_Demo_Run(void)
+{
+    Status_t status; 
+    char line_buffer[GPIO_DEMO_MAX_LINE];
+
+    /* Check if initialized */
+    if(demo_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* State machine for command processing */
+    switch(demo_state){
+        case DEMO_STATE_WAITING_FOR_COMMAND:
+            /* Check if a line is available */
+            status = UART_GetLine(line_buffer, GPIO_DEMO_MAX_LINE);
+            if(status == STATUS_OK){
+                /* Process the command (errors are reported via UART by handlers) */
+                (void)GPIO_Demo_ProccessCommand(line_buffer);
+
+                /* Show prompt for next command */
+                UART_Printf("\r\n> ");
+            }
+            break;
+
+        case DEMO_STATE_PROCESSING_COMMAND:
+            /* Reserved for future asynchronous processing; return to waiting */
+            demo_state = DEMO_STATE_WAITING_FOR_COMMAND;
+            break;
+
+        default:
+            /* Invalid state, recover by resetting to waiting */
+            demo_state = DEMO_STATE_WAITING_FOR_COMMAND;
+            break;
+    }
+
+    return STATUS_OK;
+}
