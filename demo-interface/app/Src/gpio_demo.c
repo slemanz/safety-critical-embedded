@@ -535,3 +535,52 @@ static Status_t HandleToggleCommand(uint32_t token_count, char tokens[][GPIO_DEM
 
     return STATUS_OK;
 }
+
+/**
+ * @brief Handle the 'list' command
+ * 
+ * @return Status_t Operation status
+ */
+static Status_t HandleListCommand(void)
+{
+    uint32_t i;
+    uint32_t count = 0U;
+
+    UART_Printf("Configured pins:\r\n");
+
+    for(i = 0U; i < MAX_DEMO_PINS; i++){
+        if(configured_pins[i].configured != 0U){
+            const char* mode_str;
+
+            /* Convert mode to string */
+            switch (configured_pins[i].mode)
+            {
+                case GPIO_MODE_INPUT:
+                    mode_str = "input";
+                    break;
+                case GPIO_MODE_OUTPUT:
+                    mode_str = "output";
+                    break;
+                case GPIO_MODE_ALT:
+                    mode_str = "alternate";
+                    break;
+                case GPIO_MODE_ANALOG:
+                    mode_str = "analog";
+                    break;
+                default:
+                    mode_str = "unknown";
+                    break;
+            }
+
+            UART_Printf("  %d. P%c%d: %s\r\n", count+1, 'A' + configured_pins[i].port,
+                            configured_pins[i].pin, mode_str);
+            count++;
+        }
+    }
+
+    if(count == 0U){
+        UART_Printf("  No pins configured\r\n");
+    }
+
+    return STATUS_OK;
+}
