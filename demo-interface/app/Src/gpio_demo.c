@@ -633,3 +633,33 @@ static Status_t HandleDeinitCommand(uint32_t token_count, char tokens[][GPIO_DEM
 
     return STATUS_OK;
 }
+
+Status_t GPIO_Demo_DisplayHelp(void)
+{
+    /* Check if initialized */
+    if(demo_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    UART_Printf("\r\nAvailable commands:\r\n");
+    UART_Printf("  help                     - Display this help message!\r\n");
+    UART_Printf("  init <port> <pin> <mode> - Initialize a GPIO pin\r\n");
+    UART_Printf("  deinit <port> <pin>      - Release a configured pin\r\n");
+    UART_Printf("  write <port> <pin> <state> - Set an output pin state\r\n");
+    UART_Printf("  read <port> <pin>        - Read a pin state\r\n");
+    UART_Printf("  toggle <port> <pin>      - Toggle an output pin\r\n");
+    UART_Printf("  list                     - List configured pins\r\n");
+
+    UART_Printf("\r\nParameters:\r\n");
+    UART_Printf("  port  - A, B, C, D, E, H\r\n");
+    UART_Printf("  pin   - 0 to 15\r\n");
+    UART_Printf("  mode  - input, output, alternate, analog\r\n");
+    UART_Printf("  state - 1/high/on or 0/low/off\r\n");
+
+    UART_Printf("\r\nExamples:\r\n");
+    UART_Printf("  init A 5 output      - Configure PA5 as output\r\n");
+    UART_Printf("  write A 5 high       - Drive PA5 high\r\n");
+    UART_Printf("  read A 5             - Read the state of PA5\r\n");
+
+    return STATUS_OK;
+}
