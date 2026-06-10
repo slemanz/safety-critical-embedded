@@ -663,3 +663,67 @@ Status_t GPIO_Demo_DisplayHelp(void)
 
     return STATUS_OK;
 }
+
+Status_t GPIO_Demo_Init(void)
+{
+    Status_t status;
+    uint32_t i = 0U;
+    UART_Config_t uart_config;
+
+    /* Check if already initialized */
+    if(demo_initialized != 0U){
+        return STATUS_OK;
+    }
+
+    /* Initialize UART */
+    uart_config.baudrate = 115200U;
+    uart_config.data_bits = 8U;
+    uart_config.stop_bits = 1U;
+    uart_config.parity = 0U;
+
+    status = UART_Init(&uart_config);
+    if(status != STATUS_OK){
+        return status;
+    }
+
+    status = GPIO_Init();
+    if(status != STATUS_OK){
+        UART_Printf("Error: GPIO initialization failed\r\n");
+        return status;
+    }
+
+    /* Reset configured pins */
+    for(i = 0U; i < MAX_DEMO_PINS; i++){
+        configured_pins[i].configured = 0U;
+    }
+
+    /* Display welcome message */
+    UART_Printf("\r\n\r\n");
+    UART_Printf("====================================\r\n");
+    UART_Printf("  MISRA-Compliant GPIO Driver Demo\r\n");
+    UART_Printf("====================================\r\n");
+    UART_Printf("\r\n");
+
+    /* Display driver version information */
+    {
+        uint8_t major, minor, patch;
+        status = GPIO_GetVersion(&major, &minor, &patch);
+        if(status == STATUS_OK){
+            UART_Printf("GPIO Driver Version: %d.%d.%d\r\n", major, minor, patch);
+        }
+    }
+
+    /* Display help information */
+    GPIO_Demo_DisplayHelp();
+
+    /* Show prompt */
+    UART_Printf("\r\n> ");
+
+    /* Set initial state */
+    demo_state = DEMO_STATE_WAITING_FOR_COMMAND;
+
+    /* Mark as initialized */
+    demo_initialized = 1U;
+
+    return STATUS_OK;
+}
