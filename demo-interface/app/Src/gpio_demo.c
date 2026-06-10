@@ -713,17 +713,79 @@ Status_t GPIO_Demo_Init(void)
         }
     }
 
+    /* Set initial state */
+    demo_state = DEMO_STATE_WAITING_FOR_COMMAND;
+
+    /* Mark as initialized so DisplayHelp can run during init */
+    demo_initialized = 1U;
+
     /* Display help information */
-    GPIO_Demo_DisplayHelp();
+    (void)GPIO_Demo_DisplayHelp();
 
     /* Show prompt */
     UART_Printf("\r\n> ");
 
-    /* Set initial state */
-    demo_state = DEMO_STATE_WAITING_FOR_COMMAND;
-
-    /* Mark as initialized */
-    demo_initialized = 1U;
-
     return STATUS_OK;
+}
+
+Status_t GPIO_Demo_ProccessCommand(const char* command)
+{
+    char tokens[8][GPIO_DEMO_MAX_LINE]; /* Maximum 8 tokens per command */
+    uint32_t token_count;
+    Status_t status = STATUS_OK;
+
+    /* Validate input */
+    if(command == NULL){
+        return STATUS_ERROR_NULL;
+    }
+
+    /* Check if initialized */
+    if(demo_initialized == 0U){
+        return STATUS_ERROR_INIT;
+    }
+
+    /* Parse the command into tokens */
+    token_count = ParseCommandTokens(command, tokens, 8U);
+
+    /* Check if command is empty */
+    if(token_count == 0U){
+        return STATUS_OK;
+    }
+
+    /* Identify the command */
+    if((strcmp(tokens[0], "help") == 0) || (strcmp(tokens[0], "?") == 0)){
+        /* Help command */
+        status = GPIO_Demo_DisplayHelp();
+    }
+    else if(strcmp(tokens[0], "init") == 0){
+        /* Initialize command */
+        status = HandleInitCommand(token_count, tokens);
+    }
+    else if(strcmp(tokens[0], "deinit") == 0){
+        /* Deinitialize command */
+        status = HandleDeinitCommand(token_count, tokens);
+    }
+    else if(strcmp(tokens[0], "write") == 0){
+        /* Write command */
+        status = HandleWriteCommand(token_count, tokens);
+    }
+    else if(strcmp(tokens[0], "read") == 0){
+        /* Read command */
+        status = HandleReadCommand(token_count, tokens);
+    }
+    else if(strcmp(tokens[0], "toggle") == 0){
+        /* Toggle command */
+        status = HandleToggleCommand(token_count, tokens);
+    }
+    else if(strcmp(tokens[0], "list") == 0){
+        /* List command */
+        status = HandleListCommand();
+    }
+    else{
+        /* Unknown command */
+        UART_Printf("Error: unknown command '%s'. Type 'help' for available commands.\r\n", tokens[0]);
+        status = STATUS_ERROR_PARAM;
+    }
+
+    return status;
 }
