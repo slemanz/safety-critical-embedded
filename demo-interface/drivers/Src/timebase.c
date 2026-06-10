@@ -6,10 +6,11 @@
 #define CTRL_CLCKSRC        (1U << 2)
 #define CTRL_COUNTFLAG      (1U << 16)
 
-#define ONE_SEC_LOAD        16000000
+/* 1 ms tick at 16 MHz HSI -> 16000 cycles per tick */
+#define ONE_MS_LOAD         16000U
 
-#define MAX_DELAY           0xFFFFFFFF
-#define TICK_FREQ           1
+#define MAX_DELAY           0xFFFFFFFFU
+#define TICK_FREQ           1U
 
 volatile uint32_t g_curr_tick;
 volatile uint32_t g_curr_tick_p;
@@ -45,8 +46,8 @@ void timebase_init(void)
     /* disable global interrupts */
     __disable_irq();
 
-    /* load the timer wiht number of clock cycles per second */
-    SysTick->LOAD = ONE_SEC_LOAD - 1;
+    /* load the timer with number of clock cycles per millisecond */
+    SysTick->LOAD = ONE_MS_LOAD - 1U;
 
     /* clear systick current value register */
     SysTick->VAL = 0;
