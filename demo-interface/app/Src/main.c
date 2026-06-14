@@ -22,13 +22,14 @@ int main(void)
     system_init();
 
     /* Allow system to stabilize */
-    tick_delay(10U);
+    tick_delay(100U);
 
     status = GPIO_Demo_Init();
     if(status != STATUS_OK){
         /* Demo init failed: halt safely */
         while(1){}
     }
+    tick_delay(1000U);
 
     while(1)
     {

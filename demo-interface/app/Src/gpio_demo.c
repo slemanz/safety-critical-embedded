@@ -720,7 +720,7 @@ Status_t GPIO_Demo_Init(void)
     demo_initialized = 1U;
 
     /* Display help information */
-    (void)GPIO_Demo_DisplayHelp();
+    //(void)GPIO_Demo_DisplayHelp();
 
     /* Show prompt */
     UART_Printf("\r\n> ");
