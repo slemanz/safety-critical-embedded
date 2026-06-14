@@ -21,26 +21,21 @@ BAUDRATE = 115200
 def send(console, command):
     for byte in (command + "\r").encode("ascii"):
         console.write(bytes([byte]))
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 
-with serial.Serial(PORT, BAUDRATE, timeout=1) as console:
-    # Let the board boot, then flush both directions so the boot banner and
-    # any stale transmit bytes are gone before we start commanding.
+with serial.Serial(PORT, BAUDRATE, timeout=0.2) as console:
     time.sleep(0.5)
     console.reset_input_buffer()
-    console.reset_output_buffer()
-    print(console.read(console.in_waiting).decode("ascii", errors="ignore"))
-
-    print("reset")
+    console.reset_output_buffer_buffer()
+    print("-- Init PB3")
 
     send(console, "init B 3 output")
     time.sleep(0.1)
-    print(console.read(console.in_waiting).decode("ascii", errors="ignore"))
+    response = console.readline().decode("ascii", errors="ignore")
+    print("Console:", response)
 
     send(console, "write B 3 high")
     time.sleep(0.1)
-    print(console.read(console.in_waiting).decode("ascii", errors="ignore"))
-    
-    console.reset_input_buffer()
-    console.reset_output_buffer()
+    response = console.readline().decode("ascii", errors="ignore")
+    print("Console:", response)
