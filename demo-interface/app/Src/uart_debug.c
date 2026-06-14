@@ -191,6 +191,15 @@ Status_t UART_SendString(const char* str)
         /* Do nothing */
     }
 
+    /* Discard anything received while transmitting. With no RX ring buffer
+     * those bytes were never going to be read in time anyway, and dropping
+     * them here prevents echoes of our own output (external TX->RX feedback)
+     * from being parsed as commands. Reading SR above followed by DR also
+     * clears a pending overrun (ORE). */
+    while((USART2->SR & (USART_SR_RXNE | USART_SR_ORE)) != 0U){
+        (void)USART2->DR;
+    }
+
     return STATUS_OK;
 }
 
